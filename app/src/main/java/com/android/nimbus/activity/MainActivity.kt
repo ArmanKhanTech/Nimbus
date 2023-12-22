@@ -1,4 +1,4 @@
-package com.android.nimbus
+package com.android.nimbus.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,19 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.android.nimbus.ui.theme.NImbusTheme
+import com.android.nimbus.ui.theme.NimbusTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NImbusTheme {
-                // A surface container using the 'background' color from the theme
+            NimbusTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    Greeting("Arman")
                 }
             }
         }
@@ -40,7 +39,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    NImbusTheme {
+    NimbusTheme {
         Greeting("Android")
     }
 }
