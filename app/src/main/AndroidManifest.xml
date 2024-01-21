@@ -12,7 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Nimbus"
         tools:targetApi="31">
-
+        <activity
+            android:name=".MainActivity2"
+            android:exported="false"
+            android:theme="@style/Theme.Nimbus" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -20,6 +23,7 @@
             android:theme="@style/Theme.Nimbus">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
