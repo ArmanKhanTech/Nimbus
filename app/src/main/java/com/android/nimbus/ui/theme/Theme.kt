@@ -76,14 +76,16 @@ fun NimbusTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable() () -> Unit
 ) {
-  val colors = if (!useDarkTheme) {
-    LightColors
-  } else {
-    DarkColors
-  }
+      val colors = if (!useDarkTheme) {
+        LightColors
+      } else {
+        DarkColors
+      }
 
-  MaterialTheme(
-    colorScheme = colors,
-    content = content
-  )
+      MaterialTheme(
+          colorScheme = colors,
+          shapes = Shapes,
+          typography = Typography,
+          content = content
+      )
 }

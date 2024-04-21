@@ -2,6 +2,7 @@ package com.android.nimbus.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import com.android.nimbus.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +36,7 @@ fun CenterAlignedTopAppBar() {
                 ),
                 title = {
                     Text(
-                        "Centered Top App Bar",
+                        text = "Nimbus",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -42,7 +44,7 @@ fun CenterAlignedTopAppBar() {
                 navigationIcon = {
                     IconButton(onClick = { /* do something */ }) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Filled.Menu,
                             contentDescription = "Localized description"
                         )
                     }
@@ -50,7 +52,7 @@ fun CenterAlignedTopAppBar() {
                 actions = {
                     IconButton(onClick = { /* do something */ }) {
                         Icon(
-                            imageVector = Icons.Filled.Menu,
+                            imageVector = Icons.Filled.Add,
                             contentDescription = "Localized description"
                         )
                     }
