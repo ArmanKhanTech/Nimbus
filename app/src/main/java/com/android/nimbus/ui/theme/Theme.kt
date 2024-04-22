@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -76,6 +77,15 @@ fun NimbusTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable() () -> Unit
 ) {
+     rememberSystemUiController().apply {
+        setStatusBarColor(
+            color = if (!useDarkTheme) md_theme_light_primaryContainer else md_theme_dark_primaryContainer
+        )
+        setNavigationBarColor(
+            color = if (!useDarkTheme) md_theme_light_primaryContainer else md_theme_dark_primaryContainer
+        )
+     }
+
       val Colors = if (!useDarkTheme) {
         LightColors
       } else {

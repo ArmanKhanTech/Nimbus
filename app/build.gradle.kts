@@ -72,6 +72,7 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:4.0.0")
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.1-alpha")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
