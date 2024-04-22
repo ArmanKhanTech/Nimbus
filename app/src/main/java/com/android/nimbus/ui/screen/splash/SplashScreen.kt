@@ -1,50 +1,58 @@
 package com.android.nimbus.ui.screen.splash
 
+import android.os.Handler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
-import com.android.nimbus.R
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(
+    navController: NavController
+) {
+    val context = LocalContext.current
+
+    Handler(context.mainLooper).postDelayed({
+        navController.navigate("home")
+    }, 3000)
+
     Surface(
         modifier = Modifier
-        .fillMaxSize()
-        .background(Color.Black)
+            .background(Color.Black)
+            .fillMaxSize()
     ) {
-        AnimatedPreloader(modifier = Modifier.size(20.dp).background(Color.Black))
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Nimbus",
+                modifier = Modifier.padding(10.dp, 10.dp),
+            )
+            Text(
+                text = "Splash Screen",
+                modifier = Modifier.padding(10.dp, 10.dp),
+            )
+        }
     }
 }
 
+@Preview
 @Composable
-fun AnimatedPreloader(modifier: Modifier = Modifier) {
-    val preloaderLottieComposition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(
-            R.raw.splash
-        )
-    )
-
-    val preloaderProgress by animateLottieCompositionAsState(
-        preloaderLottieComposition,
-        iterations = LottieConstants.IterateForever,
-        isPlaying = true
-    )
-
-
-    LottieAnimation(
-        composition = preloaderLottieComposition,
-        progress = preloaderProgress,
-        modifier = modifier
+fun SplashScreenPreview() {
+    SplashScreen(
+        navController = rememberNavController()
     )
 }

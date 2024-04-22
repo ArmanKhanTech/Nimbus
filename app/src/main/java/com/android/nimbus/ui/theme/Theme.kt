@@ -2,8 +2,8 @@ package com.android.nimbus.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
 private val LightColors = lightColorScheme(
@@ -76,14 +76,14 @@ fun NimbusTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable() () -> Unit
 ) {
-      val colors = if (!useDarkTheme) {
+      val Colors = if (!useDarkTheme) {
         LightColors
       } else {
         DarkColors
       }
 
       MaterialTheme(
-          colorScheme = colors,
+          colorScheme = Colors,
           shapes = Shapes,
           typography = Typography,
           content = content
