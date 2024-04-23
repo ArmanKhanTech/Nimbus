@@ -9,7 +9,7 @@
         android:theme="@style/Theme.Nimbus">
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Nimbus">
             <intent-filter>

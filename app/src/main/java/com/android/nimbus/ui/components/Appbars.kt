@@ -9,6 +9,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -49,6 +50,40 @@ fun CenterAlignedTopAppBar(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Search",
                     modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MediumAppBar(
+    title: String,
+    onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    MediumTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        title = {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = onBackPressed
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back Button",
+                    modifier = modifier.size(28.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }

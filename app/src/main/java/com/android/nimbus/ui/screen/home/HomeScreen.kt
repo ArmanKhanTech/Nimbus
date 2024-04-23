@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DrawerValue
@@ -39,7 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.android.nimbus.R
-import com.android.nimbus.ui.Screen
+import com.android.nimbus.Screen
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

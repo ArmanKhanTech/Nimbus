@@ -1,11 +1,10 @@
-package com.android.nimbus.ui
+package com.android.nimbus
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.android.nimbus.ui.screen.Login.LoginScreen
 import com.android.nimbus.ui.screen.home.HomeScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
@@ -43,7 +42,7 @@ fun NimbusApp() {
             SettingsScreen(navController)
         }
         composable(NavigationItem.Login.route) {
-            LoginScreen(navController)
+            // LoginScreen(navController)
         }
     }
 }
