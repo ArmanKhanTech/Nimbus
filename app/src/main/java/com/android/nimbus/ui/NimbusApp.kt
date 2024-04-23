@@ -5,18 +5,22 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.android.nimbus.ui.screen.Login.LoginScreen
 import com.android.nimbus.ui.screen.home.HomeScreen
+import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
 
 enum class Screen {
     SPLASH,
     HOME,
+    SETTINGS,
     LOGIN,
 }
 
 sealed class NavigationItem(val route: String) {
     data object Splash : NavigationItem(Screen.SPLASH.name)
     data object Home : NavigationItem(Screen.HOME.name)
+    data object Settings : NavigationItem(Screen.SETTINGS.name)
     data object Login : NavigationItem(Screen.LOGIN.name)
 }
 
@@ -35,8 +39,11 @@ fun NimbusApp() {
         composable(NavigationItem.Home.route) {
             HomeScreen(navController)
         }
+        composable(NavigationItem.Settings.route) {
+            SettingsScreen(navController)
+        }
         composable(NavigationItem.Login.route) {
-//            LoginScreen(navController)
+            LoginScreen(navController)
         }
     }
 }

@@ -78,22 +78,22 @@ fun NimbusTheme(
   content: @Composable() () -> Unit
 ) {
      rememberSystemUiController().apply {
-        setStatusBarColor(
-            color = if (!useDarkTheme) md_theme_light_primaryContainer else md_theme_dark_primaryContainer
-        )
-        setNavigationBarColor(
-            color = if (!useDarkTheme) md_theme_light_primaryContainer else md_theme_dark_primaryContainer
-        )
+         setStatusBarColor(
+             color = if (!useDarkTheme) md_theme_light_background else md_theme_dark_background
+         )
+         setNavigationBarColor(
+             color = if (!useDarkTheme) md_theme_light_background else md_theme_dark_background
+         )
      }
 
-      val Colors = if (!useDarkTheme) {
+    val colorScheme = if (!useDarkTheme) {
         LightColors
       } else {
         DarkColors
       }
 
       MaterialTheme(
-          colorScheme = Colors,
+          colorScheme = colorScheme,
           shapes = Shapes,
           typography = Typography,
           content = content
