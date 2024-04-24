@@ -13,15 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.android.nimbus.Screen
 
 @Composable
 fun SplashScreen(
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
@@ -30,7 +29,7 @@ fun SplashScreen(
     }, 3000)
 
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .background(Color.Black)
             .fillMaxSize()
     ) {
@@ -40,20 +39,12 @@ fun SplashScreen(
         ) {
             Text(
                 text = "Nimbus",
-                modifier = Modifier.padding(10.dp, 10.dp),
+                modifier = modifier.padding(10.dp, 10.dp),
             )
             Text(
                 text = "Splash Screen",
-                modifier = Modifier.padding(10.dp, 10.dp),
+                modifier = modifier.padding(10.dp, 10.dp),
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun SplashScreenPreview() {
-    SplashScreen(
-        navController = rememberNavController()
-    )
 }

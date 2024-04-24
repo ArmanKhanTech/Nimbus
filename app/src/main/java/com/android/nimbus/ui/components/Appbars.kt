@@ -1,6 +1,11 @@
 package com.android.nimbus.ui.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -12,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -60,7 +66,7 @@ fun CenterAlignedTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MediumAppBar(
+fun MediumTopAppBar(
     title: String,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -75,6 +81,54 @@ fun MediumAppBar(
                 title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground
+            )
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = onBackPressed
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back Button",
+                    modifier = modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBar(
+    lazyListState: LazyListState,
+    title: String,
+    onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        modifier = if (lazyListState.isScrollInProgress) {
+            modifier
+                .animateContentSize(
+                    animationSpec = tween(300)
+                )
+                .height(56.dp)
+        } else {
+            modifier
+                .animateContentSize(
+                    animationSpec = tween(300)
+                )
+                .wrapContentHeight()
+        },
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         },
         navigationIcon = {

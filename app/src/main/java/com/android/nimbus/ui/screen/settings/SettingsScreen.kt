@@ -15,7 +15,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import com.android.nimbus.ui.components.MediumAppBar
+import com.android.nimbus.ui.components.MediumTopAppBar
 import com.android.nimbus.utility.SharedPreferenceUtility
 
 @Composable
@@ -28,7 +28,7 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            MediumAppBar(
+            MediumTopAppBar(
                 title = "Settings",
                 onBackPressed = {
                     navController.popBackStack()

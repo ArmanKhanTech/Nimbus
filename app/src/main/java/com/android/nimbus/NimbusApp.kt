@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.android.nimbus.ui.screen.feed.FeedScreen
 import com.android.nimbus.ui.screen.home.HomeScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
@@ -13,15 +14,23 @@ import com.android.nimbus.ui.screen.splash.SplashScreen
 enum class Screen {
     SPLASH,
     HOME,
+    FEED,
+    TOPICS,
+    RELEVANCE,
     SETTINGS,
     LOGIN,
+    SIGNUP
 }
 
 sealed class NavigationItem(val route: String) {
     data object Splash : NavigationItem(Screen.SPLASH.name)
     data object Home : NavigationItem(Screen.HOME.name)
+    data object Feed : NavigationItem(Screen.FEED.name)
+    data object Topics : NavigationItem(Screen.TOPICS.name)
+    data object Relevance : NavigationItem(Screen.RELEVANCE.name)
     data object Settings : NavigationItem(Screen.SETTINGS.name)
     data object Login : NavigationItem(Screen.LOGIN.name)
+    data object Signup : NavigationItem(Screen.SIGNUP.name)
 }
 
 @Composable
@@ -37,16 +46,28 @@ fun NimbusApp(
         startDestination = NavigationItem.Splash.route
     ) {
         composable(NavigationItem.Splash.route) {
-            SplashScreen(navController)
+            SplashScreen(navController, modifier)
         }
         composable(NavigationItem.Home.route) {
             HomeScreen(navController, isDarkMode, modifier)
+        }
+        composable(NavigationItem.Feed.route) {
+            FeedScreen(navController, "Feed", modifier)
+        }
+        composable(NavigationItem.Topics.route) {
+            // TopicsScreen(navController)
+        }
+        composable(NavigationItem.Relevance.route) {
+            // RelevanceScreen(navController)
         }
         composable(NavigationItem.Settings.route) {
             SettingsScreen(navController, isDarkMode, modifier)
         }
         composable(NavigationItem.Login.route) {
             // LoginScreen(navController)
+        }
+        composable(NavigationItem.Signup.route) {
+            // SignupScreen(navController)
         }
     }
 }

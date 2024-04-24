@@ -2,6 +2,7 @@ package com.android.nimbus.ui.screen.home
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -43,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -107,7 +112,7 @@ fun HomeScreen(
                 item {
                     Header(sheetState, scope, modifier)
                     if (isDarkMode != null) {
-                        FeatureRow(isDarkMode, modifier)
+                        FeatureRow(isDarkMode, navController, modifier)
                     }
                     TopStoriesButton(modifier)
                     TopStories(modifier)
@@ -251,186 +256,104 @@ fun Header(
 @Composable
 fun FeatureRow(
     isDarkMode: MutableState<Boolean>,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
         modifier = modifier.padding(0.dp, 10.dp, 0.dp, 0.dp)
     ) {
         item {
-            OutlinedButton(
-                onClick = {
-                    // Handle my feed
+            FeatureButton(
+                isDarkMode = isDarkMode,
+                onButtonClick = {
+                    navController.navigate(Screen.FEED.name)
                 },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.background
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.background
-                ),
-                contentPadding = PaddingValues(18.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        if (isDarkMode.value) painterResource(R.drawable.feed_icon_dark)
-                        else painterResource(R.drawable.feed_icon_light),
-                        contentDescription = "My Feed",
-                        contentScale = ContentScale.Crop,
-                        modifier = modifier.size(50.dp)
-                    )
-                    Text(
-                        text = "My Feed",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = modifier.padding(0.dp, 10.dp)
-                    )
-                }
-            }
-            OutlinedButton(
-                onClick = {
-                    // Handle all news
+                imageDark = R.drawable.feed_icon_dark,
+                imageLight = R.drawable.feed_icon_light,
+                title = "My Feed",
+                modifier = modifier
+            )
+            FeatureButton(
+                isDarkMode = isDarkMode,
+                onButtonClick = {
+
                 },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.background
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.background
-                ),
-                contentPadding = PaddingValues(18.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        if (isDarkMode.value) painterResource(R.drawable.news_icon_dark)
-                        else painterResource(R.drawable.news_icon_light),
-                        contentDescription = "All News",
-                        contentScale = ContentScale.Crop,
-                        modifier = modifier
-                            .size(50.dp)
-                            .padding(2.dp)
-                    )
-                    Text(
-                        text = "All News",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = modifier.padding(0.dp, 10.dp)
-                    )
-                }
-            }
-            OutlinedButton(
-                onClick = {
-                    // Handle top stories
+                imageDark = R.drawable.news_icon_dark,
+                imageLight = R.drawable.news_icon_light,
+                title = "All News"
+            )
+            FeatureButton(
+                isDarkMode = isDarkMode,
+                onButtonClick = {
+                    // Handle feature button
                 },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.background
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.background
-                ),
-                contentPadding = PaddingValues(18.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        if (isDarkMode.value) painterResource(R.drawable.stories_icon_dark)
-                        else painterResource(R.drawable.stories_icon_light),
-                        contentDescription = "Top Stories",
-                        contentScale = ContentScale.FillHeight,
-                        modifier = modifier.size(50.dp)
-                    )
-                    Text(
-                        text = "Top Stories",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = modifier.padding(0.dp, 10.dp)
-                    )
-                }
-            }
-            OutlinedButton(
-                onClick = {
-                    // Handle trending
+                imageDark = R.drawable.stories_icon_dark,
+                imageLight = R.drawable.stories_icon_light,
+                title = "Top Stories"
+            )
+            FeatureButton(
+                isDarkMode = isDarkMode,
+                onButtonClick = {
+                    // Handle feature button
                 },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.background
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.background
-                ),
-                contentPadding = PaddingValues(18.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        if (isDarkMode.value) painterResource(R.drawable.trending_icon_dark)
-                        else painterResource(R.drawable.trending_icon_light),
-                        contentDescription = "Trending",
-                        contentScale = ContentScale.FillHeight,
-                        modifier = modifier.size(50.dp)
-                    )
-                    Text(
-                        text = "Trending",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = modifier.padding(0.dp, 10.dp)
-                    )
-                }
-            }
-            OutlinedButton(
-                onClick = {
-                    // Handle bookmarks
+                imageDark = R.drawable.trending_icon_dark,
+                imageLight = R.drawable.trending_icon_light,
+                title = "Treanding"
+            )
+            FeatureButton(
+                isDarkMode = isDarkMode,
+                onButtonClick = {
+                    // Handle feature button
                 },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.background
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.background
-                ),
-                contentPadding = PaddingValues(18.dp),
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        if (isDarkMode.value) painterResource(R.drawable.bookmark_icon_dark)
-                        else painterResource(R.drawable.bookmark_icon_light),
-                        contentDescription = "Bookmarks",
-                        contentScale = ContentScale.FillHeight,
-                        modifier = modifier
-                            .size(50.dp)
-                            .padding(1.dp)
-                    )
-                    Text(
-                        text = "Bookmarks",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = modifier.padding(0.dp, 10.dp)
-                    )
-                }
-            }
+                imageDark = R.drawable.bookmark_icon_dark,
+                imageLight = R.drawable.bookmark_icon_light,
+                title = "Bookmarks"
+            )
+        }
+    }
+}
+
+@Composable
+fun FeatureButton(
+    isDarkMode: MutableState<Boolean>,
+    onButtonClick: () -> Unit,
+    imageDark: Int,
+    imageLight: Int,
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = onButtonClick,
+        colors = ButtonColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.background,
+            disabledContainerColor = MaterialTheme.colorScheme.background,
+            disabledContentColor = MaterialTheme.colorScheme.background
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.background
+        ),
+        contentPadding = PaddingValues(18.dp),
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                if (isDarkMode.value) painterResource(imageDark)
+                else painterResource(imageLight),
+                contentDescription = title,
+                contentScale = ContentScale.FillHeight,
+                modifier = modifier
+                    .size(50.dp)
+                    .padding(1.dp)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = modifier.padding(0.dp, 10.dp)
+            )
         }
     }
 }
@@ -484,91 +407,73 @@ fun TopStories(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column {
-            AsyncImage(
-                model = null,
-                contentDescription = "Top Stories Headline One Image",
-                contentScale = ContentScale.Crop,
+            TopStoriesMainHeadline(
                 modifier = modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(
-                        Shimmer(true, 1000f)
-                    )
             )
-            Spacer(modifier = modifier.height(10.dp))
-            Text(
-                text = "News Title",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground
+            CustomDivider(modifier)
+            TopStoriesSubHeadlines(
+                modifier = modifier
             )
-            Spacer(modifier = modifier.height(20.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "News Title",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-                Spacer(modifier = modifier.weight(1f))
-                AsyncImage(
-                    model = null,
-                    contentDescription = "Top Stories Headline Two Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .size(75.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            Shimmer(true, 1000f)
-                        )
-                )
-            }
-            Spacer(modifier = modifier.height(20.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "News Title",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-                Spacer(modifier = modifier.weight(1f))
-                AsyncImage(
-                    model = null,
-                    contentDescription = "Top Stories Headline Three Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .size(75.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            Shimmer(true, 1000f)
-                        )
-                )
-            }
-            Spacer(modifier = modifier.height(20.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "News Title",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-                Spacer(modifier = modifier.weight(1f))
-                AsyncImage(
-                    model = null,
-                    contentDescription = "Top Stories Headline Four Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .size(75.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            Shimmer(true, 1000f)
-                        )
-                )
-            }
+            CustomDivider(modifier)
+            TopStoriesSubHeadlines(
+                modifier = modifier
+            )
+            CustomDivider(modifier)
+            TopStoriesSubHeadlines(
+                modifier = modifier
+            )
         }
+    }
+}
+
+@Composable
+fun TopStoriesMainHeadline(
+    modifier: Modifier
+) {
+    AsyncImage(
+        model = null,
+        contentDescription = "Top Stories Headline One Image",
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                Shimmer(true, 1000f)
+            )
+    )
+    Spacer(modifier = modifier.height(10.dp))
+    Text(
+        text = "News Title",
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onBackground
+    )
+}
+
+@Composable
+fun TopStoriesSubHeadlines(
+    modifier: Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "News Title",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        Spacer(modifier = modifier.weight(1f))
+        AsyncImage(
+            model = null,
+            contentDescription = "Top Stories Headline Four Image",
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+                .size(75.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    Shimmer(true, 1000f)
+                )
+        )
     }
 }
 
@@ -609,6 +514,7 @@ fun TopicsHeader(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Topics(
     modifier: Modifier = Modifier
@@ -651,13 +557,20 @@ fun Topics(
         "Travel",
     )
 
+    val pagerState = rememberPagerState(pageCount = { titles.size })
+
     var selectedTabIndex by remember {
         mutableIntStateOf(0)
     }
 
+    LaunchedEffect(key1 = pagerState.currentPage) {
+        selectedTabIndex = pagerState.currentPage
+    }
+
+    val scope = rememberCoroutineScope()
+
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(18.dp, 0.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ScrollableTabRow(
             selectedTabIndex = selectedTabIndex,
@@ -679,6 +592,10 @@ fun Topics(
                             .animateContentSize()
                             .clickable {
                                 selectedTabIndex = index
+                                scope.launch {
+                                    // fix animation
+                                    pagerState.animateScrollToPage(index)
+                                }
                             }
                             .border(
                                 BorderStroke(
@@ -693,7 +610,8 @@ fun Topics(
             }
         }
         ScrollableTabRow(
-            selectedTabIndex = selectedTabIndex
+            selectedTabIndex = selectedTabIndex,
+            divider = {},
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(
@@ -706,91 +624,99 @@ fun Topics(
                             else MaterialTheme.colorScheme.onBackground
                         )
                     },
-                    selected = selectedTabIndex == index,
+                    selected = pagerState.currentPage == index,
                     onClick = {
                         selectedTabIndex = index
+                        scope.launch {
+                            // fix animation
+                            pagerState.animateScrollToPage(index)
+                        }
                     }
                 )
             }
         }
         Spacer(modifier = modifier.height(20.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AsyncImage(
-                    model = null,
-                    contentDescription = "Topic Headline One Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .size(75.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            Shimmer(true, 1000f)
-                        )
-                )
-                Spacer(modifier = modifier.weight(1f))
-                Text(
-                    text = "News Title",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-            Spacer(modifier = modifier.height(20.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AsyncImage(
-                    model = null,
-                    contentDescription = "Topic Headline Two Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .size(75.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            Shimmer(true, 1000f)
-                        )
-                )
-                Spacer(modifier = modifier.weight(1f))
-                Text(
-                    text = "News Title",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-            Spacer(modifier = modifier.height(20.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AsyncImage(
-                    model = null,
-                    contentDescription = "Topic Headline Three Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .size(75.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            Shimmer(true, 1000f)
-                        )
-                )
-                Spacer(modifier = modifier.weight(1f))
-                Text(
-                    text = "News Title",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-            Spacer(modifier = modifier.height(30.dp))
-            Text(
-                text = "View More",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary,
+        HorizontalPager(
+            state = pagerState
+        ) { page ->
+            TopicsPage(
+                page = page,
+                pagerState
             )
-            Spacer(modifier = modifier.height(30.dp))
         }
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TopicsPage(
+    page: Int,
+    pagerState: PagerState,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.padding(18.dp, 0.dp)
+    ) {
+        TopicsSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopicsSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopicsSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        Text(
+            text = "View More",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = modifier.clickable {
+                // Handle view more
+            }
+        )
+    }
+}
+
+@Composable
+fun TopicsSubHeadlines(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            model = null,
+            contentDescription = "Topic Headline Three Image",
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+                .size(75.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    Shimmer(true, 1000f)
+                )
+        )
+        Spacer(modifier = modifier.weight(1f))
+        Text(
+            text = "News Title",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+    }
+}
+
+@Composable
+fun CustomDivider(
+    modifier: Modifier = Modifier
+) {
+    HorizontalDivider(
+        thickness = 0.15.dp,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier.padding(10.dp, 10.dp)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

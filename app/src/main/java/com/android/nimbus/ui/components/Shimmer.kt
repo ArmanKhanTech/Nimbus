@@ -32,6 +32,7 @@ fun Shimmer(
                 animation = tween(1000), repeatMode = RepeatMode.Reverse
             ), label = ""
         )
+
         Brush.linearGradient(
             colors = shimmerColors,
             start = Offset.Zero,
