@@ -1,21 +1,30 @@
 package com.android.nimbus.ui.screen.home
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -27,22 +36,36 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
+import com.android.nimbus.ui.components.Shimmer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -50,6 +73,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     navController: NavController,
+    isDarkMode: MutableState<Boolean>?,
     modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -61,7 +85,7 @@ fun HomeScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Drawer(navController, modifier)
+            Drawer(navController, scope, drawerState, modifier)
         },
     ) {
         Scaffold(
@@ -82,8 +106,13 @@ fun HomeScreen(
             ) {
                 item {
                     Header(sheetState, scope, modifier)
-                    FeatureRow(modifier)
+                    if (isDarkMode != null) {
+                        FeatureRow(isDarkMode, modifier)
+                    }
                     TopStoriesButton(modifier)
+                    TopStories(modifier)
+                    TopicsHeader(modifier)
+                    Topics(modifier)
                 }
             }
 
@@ -97,6 +126,8 @@ fun HomeScreen(
 @Composable
 fun Drawer(
     navController: NavController,
+    scope: CoroutineScope,
+    drawerState: DrawerState,
     modifier: Modifier = Modifier
 ) {
     ModalDrawerSheet(
@@ -124,6 +155,9 @@ fun Drawer(
             },
             selected = false,
             onClick = {
+                scope.launch {
+                    drawerState.close()
+                }
                 navController.navigate(Screen.SETTINGS.name)
             },
             icon = {
@@ -216,10 +250,9 @@ fun Header(
 
 @Composable
 fun FeatureRow(
+    isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
-//    val sharedPreferences = getSharedPreferences("user", MODE_PRIVATE)
-
     LazyRow(
         modifier = modifier.padding(0.dp, 10.dp, 0.dp, 0.dp)
     ) {
@@ -244,7 +277,8 @@ fun FeatureRow(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painterResource(R.drawable.feed_icon_light),
+                        if (isDarkMode.value) painterResource(R.drawable.feed_icon_dark)
+                        else painterResource(R.drawable.feed_icon_light),
                         contentDescription = "My Feed",
                         contentScale = ContentScale.Crop,
                         modifier = modifier.size(50.dp)
@@ -277,7 +311,8 @@ fun FeatureRow(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painterResource(R.drawable.news_icon_light),
+                        if (isDarkMode.value) painterResource(R.drawable.news_icon_dark)
+                        else painterResource(R.drawable.news_icon_light),
                         contentDescription = "All News",
                         contentScale = ContentScale.Crop,
                         modifier = modifier
@@ -312,7 +347,8 @@ fun FeatureRow(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painterResource(R.drawable.stories_icon_light),
+                        if (isDarkMode.value) painterResource(R.drawable.stories_icon_dark)
+                        else painterResource(R.drawable.stories_icon_light),
                         contentDescription = "Top Stories",
                         contentScale = ContentScale.FillHeight,
                         modifier = modifier.size(50.dp)
@@ -345,7 +381,8 @@ fun FeatureRow(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painterResource(R.drawable.trending_icon_light),
+                        if (isDarkMode.value) painterResource(R.drawable.trending_icon_dark)
+                        else painterResource(R.drawable.trending_icon_light),
                         contentDescription = "Trending",
                         contentScale = ContentScale.FillHeight,
                         modifier = modifier.size(50.dp)
@@ -378,7 +415,8 @@ fun FeatureRow(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painterResource(R.drawable.bookmark_icon_light),
+                        if (isDarkMode.value) painterResource(R.drawable.bookmark_icon_dark)
+                        else painterResource(R.drawable.bookmark_icon_light),
                         contentDescription = "Bookmarks",
                         contentScale = ContentScale.FillHeight,
                         modifier = modifier
@@ -436,6 +474,325 @@ fun TopStoriesButton(
     }
 }
 
+@Composable
+fun TopStories(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column {
+            AsyncImage(
+                model = null,
+                contentDescription = "Top Stories Headline One Image",
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(
+                        Shimmer(true, 1000f)
+                    )
+            )
+            Spacer(modifier = modifier.height(10.dp))
+            Text(
+                text = "News Title",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = modifier.height(20.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "News Title",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Spacer(modifier = modifier.weight(1f))
+                AsyncImage(
+                    model = null,
+                    contentDescription = "Top Stories Headline Two Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                        .size(75.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            Shimmer(true, 1000f)
+                        )
+                )
+            }
+            Spacer(modifier = modifier.height(20.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "News Title",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Spacer(modifier = modifier.weight(1f))
+                AsyncImage(
+                    model = null,
+                    contentDescription = "Top Stories Headline Three Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                        .size(75.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            Shimmer(true, 1000f)
+                        )
+                )
+            }
+            Spacer(modifier = modifier.height(20.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "News Title",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Spacer(modifier = modifier.weight(1f))
+                AsyncImage(
+                    model = null,
+                    contentDescription = "Top Stories Headline Four Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                        .size(75.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            Shimmer(true, 1000f)
+                        )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TopicsHeader(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(18.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Topics",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = modifier.weight(1f))
+            ClickableText(
+                text = AnnotatedString(
+                    "See All",
+                    spanStyle = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                ),
+                onClick = {
+                    // Handle see all
+                },
+            )
+        }
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun Topics(
+    modifier: Modifier = Modifier
+) {
+    val images = listOf(
+        R.drawable.arts,
+        R.drawable.business,
+        R.drawable.climate,
+        R.drawable.economy,
+        R.drawable.education,
+        R.drawable.fashion,
+        R.drawable.health,
+        R.drawable.jobs,
+        R.drawable.movie,
+        R.drawable.music,
+        R.drawable.politics,
+        R.drawable.science,
+        R.drawable.sports,
+        R.drawable.space,
+        R.drawable.technology,
+        R.drawable.travel,
+    )
+
+    val titles = listOf(
+        "Arts",
+        "Business",
+        "Climate",
+        "Economy",
+        "Education",
+        "Fashion",
+        "Health",
+        "Jobs",
+        "Movie",
+        "Music",
+        "Politics",
+        "Science",
+        "Sports",
+        "Space",
+        "Technology",
+        "Travel",
+    )
+
+    var selectedTabIndex by remember {
+        mutableIntStateOf(0)
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.padding(18.dp, 0.dp)
+    ) {
+        ScrollableTabRow(
+            selectedTabIndex = selectedTabIndex,
+            indicator = {},
+            divider = {}
+        ) {
+            images.forEachIndexed { index, _ ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = modifier.weight(1f))
+                    Image(
+                        painter = painterResource(images[index]),
+                        contentDescription = titles[index],
+                        contentScale = ContentScale.Crop,
+                        modifier = modifier
+                            .size(if (selectedTabIndex == index) 75.dp else 60.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .animateContentSize()
+                            .clickable {
+                                selectedTabIndex = index
+                            }
+                            .border(
+                                BorderStroke(
+                                    width = if (selectedTabIndex == index) 2.dp else 0.25.dp,
+                                    color = MaterialTheme.colorScheme.primary
+                                ),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                    )
+                    Spacer(modifier = modifier.weight(1f))
+                }
+            }
+        }
+        ScrollableTabRow(
+            selectedTabIndex = selectedTabIndex
+        ) {
+            titles.forEachIndexed { index, title ->
+                Tab(
+                    text = {
+                        Text(
+                            text = title,
+                            style = if (selectedTabIndex == index) MaterialTheme.typography.bodyMedium
+                            else MaterialTheme.typography.bodySmall,
+                            color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onBackground
+                        )
+                    },
+                    selected = selectedTabIndex == index,
+                    onClick = {
+                        selectedTabIndex = index
+                    }
+                )
+            }
+        }
+        Spacer(modifier = modifier.height(20.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = null,
+                    contentDescription = "Topic Headline One Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                        .size(75.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            Shimmer(true, 1000f)
+                        )
+                )
+                Spacer(modifier = modifier.weight(1f))
+                Text(
+                    text = "News Title",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+            }
+            Spacer(modifier = modifier.height(20.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = null,
+                    contentDescription = "Topic Headline Two Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                        .size(75.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            Shimmer(true, 1000f)
+                        )
+                )
+                Spacer(modifier = modifier.weight(1f))
+                Text(
+                    text = "News Title",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+            }
+            Spacer(modifier = modifier.height(20.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = null,
+                    contentDescription = "Topic Headline Three Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                        .size(75.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            Shimmer(true, 1000f)
+                        )
+                )
+                Spacer(modifier = modifier.weight(1f))
+                Text(
+                    text = "News Title",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+            }
+            Spacer(modifier = modifier.height(30.dp))
+            Text(
+                text = "View More",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(modifier = modifier.height(30.dp))
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheet(
@@ -476,20 +833,30 @@ fun BottomSheet(
                 modifier = modifier.padding(20.dp)
             ) {
                 items(5) {
-                    TempCard(modifier)
+                    // TempCard(modifier)
                 }
             }
         }
     }
 }
 
+//@Composable
+//fun TempCard(
+//    modifier: Modifier = Modifier
+//) {
+//    Column {
+//        Text(text = "Day")
+//        Image(painter = , contentDescription = )
+//        Text(text = "38℃")
+//    }
+//}
+
+@Preview
 @Composable
-fun TempCard(
-    modifier: Modifier = Modifier
-) {
-    Column {
-        Text(text = "Day")
-        // Image(painter = , contentDescription = )
-        Text(text = "38℃")
-    }
+fun HomeScreenPreview() {
+    HomeScreen(
+        navController = rememberNavController(),
+        isDarkMode = null,
+        modifier = Modifier
+    )
 }

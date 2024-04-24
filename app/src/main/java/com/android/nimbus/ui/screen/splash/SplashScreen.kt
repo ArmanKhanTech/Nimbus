@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.android.nimbus.Screen
 
 @Composable
 fun SplashScreen(
@@ -25,7 +26,7 @@ fun SplashScreen(
     val context = LocalContext.current
 
     Handler(context.mainLooper).postDelayed({
-        navController.navigate("home")
+        navController.navigate(Screen.HOME.name)
     }, 3000)
 
     Surface(

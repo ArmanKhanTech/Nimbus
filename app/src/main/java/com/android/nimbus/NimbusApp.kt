@@ -1,6 +1,7 @@
 package com.android.nimbus
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +25,10 @@ sealed class NavigationItem(val route: String) {
 }
 
 @Composable
-fun NimbusApp() {
+fun NimbusApp(
+    isDarkMode: MutableState<Boolean>,
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -36,10 +40,10 @@ fun NimbusApp() {
             SplashScreen(navController)
         }
         composable(NavigationItem.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController, isDarkMode, modifier)
         }
         composable(NavigationItem.Settings.route) {
-            SettingsScreen(navController)
+            SettingsScreen(navController, isDarkMode, modifier)
         }
         composable(NavigationItem.Login.route) {
             // LoginScreen(navController)

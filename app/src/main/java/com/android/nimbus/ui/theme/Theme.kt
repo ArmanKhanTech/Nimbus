@@ -74,20 +74,20 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun NimbusTheme(
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
-  content: @Composable() () -> Unit
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable() () -> Unit
 ) {
-     rememberSystemUiController().apply {
+    rememberSystemUiController().apply {
          setStatusBarColor(
-             color = if (!isDarkTheme) md_theme_light_background else md_theme_dark_background
+             color = if (!useDarkTheme) md_theme_light_background else md_theme_dark_background
          )
          setNavigationBarColor(
-             color = if (!isDarkTheme) md_theme_light_background else md_theme_dark_background
+             color = if (!useDarkTheme) md_theme_light_background else md_theme_dark_background
 
          )
      }
 
-    val colorScheme = if (isDarkTheme) DarkColors else LightColors
+    val colorScheme = if (useDarkTheme) DarkColors else LightColors
 
     MaterialTheme(
         colorScheme = colorScheme,

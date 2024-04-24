@@ -23,8 +23,15 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        release {
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -75,6 +82,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.1-alpha")
     implementation("androidx.compose.material:material-icons-extended:1.6.6")
     implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

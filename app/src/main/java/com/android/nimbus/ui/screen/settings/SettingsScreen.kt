@@ -11,10 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -24,12 +21,10 @@ import com.android.nimbus.utility.SharedPreferenceUtility
 @Composable
 fun SettingsScreen(
     navController: NavController,
+    isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
     val sharedPreferences = SharedPreferenceUtility(LocalContext.current)
-    var isDarkMode by remember {
-        mutableStateOf(sharedPreferences.getBooleanData("darkMode", false))
-    }
 
     Scaffold(
         topBar = {
@@ -69,10 +64,10 @@ fun SettingsScreen(
                 },
                 trailingContent = {
                     Switch(
-                        checked = isDarkMode,
+                        checked = isDarkMode.value,
                         onCheckedChange = {
                             sharedPreferences.saveBooleanData("darkMode", it)
-                            isDarkMode = it
+                            isDarkMode.value = it
                         }
                     )
                 }
