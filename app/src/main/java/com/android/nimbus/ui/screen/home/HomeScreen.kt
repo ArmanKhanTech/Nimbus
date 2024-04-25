@@ -298,7 +298,7 @@ fun FeatureRow(
                 },
                 imageDark = R.drawable.trending_icon_dark,
                 imageLight = R.drawable.trending_icon_light,
-                title = "Treanding"
+                title = "Trending"
             )
             FeatureButton(
                 isDarkMode = isDarkMode,
@@ -432,7 +432,7 @@ fun TopStoriesMainHeadline(
 ) {
     AsyncImage(
         model = null,
-        contentDescription = "Top Stories Headline One Image",
+        contentDescription = "News Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
             .fillMaxWidth()
@@ -444,9 +444,10 @@ fun TopStoriesMainHeadline(
     )
     Spacer(modifier = modifier.height(10.dp))
     Text(
-        text = "News Title",
+        text = "Headline",
         style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onBackground
+        color = MaterialTheme.colorScheme.onBackground,
+        maxLines = 3
     )
 }
 
@@ -458,14 +459,15 @@ fun TopStoriesSubHeadlines(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "News Title",
+            text = "Headline",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
+            maxLines = 3
         )
         Spacer(modifier = modifier.weight(1f))
         AsyncImage(
             model = null,
-            contentDescription = "Top Stories Headline Four Image",
+            contentDescription = "News Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
@@ -669,14 +671,15 @@ fun TopicsPage(
         TopicsSubHeadlines(
             modifier = modifier
         )
-        CustomDivider(modifier)
         Text(
             text = "View More",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary,
-            modifier = modifier.clickable {
-                // Handle view more
-            }
+            modifier = modifier
+                .padding(0.dp, 20.dp)
+                .clickable {
+                    // Handle view more
+                }
         )
     }
 }
@@ -690,7 +693,7 @@ fun TopicsSubHeadlines(
     ) {
         AsyncImage(
             model = null,
-            contentDescription = "Topic Headline Three Image",
+            contentDescription = "News Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
@@ -701,9 +704,10 @@ fun TopicsSubHeadlines(
         )
         Spacer(modifier = modifier.weight(1f))
         Text(
-            text = "News Title",
+            text = "Headline",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
+            maxLines = 3
         )
     }
 }

@@ -1,11 +1,6 @@
 package com.android.nimbus.ui.components
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -101,7 +96,6 @@ fun MediumTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
-    lazyListState: LazyListState,
     title: String,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
@@ -111,24 +105,11 @@ fun TopAppBar(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
-        modifier = if (lazyListState.isScrollInProgress) {
-            modifier
-                .animateContentSize(
-                    animationSpec = tween(300)
-                )
-                .height(56.dp)
-        } else {
-            modifier
-                .animateContentSize(
-                    animationSpec = tween(300)
-                )
-                .wrapContentHeight()
-        },
         title = {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
         },
         navigationIcon = {

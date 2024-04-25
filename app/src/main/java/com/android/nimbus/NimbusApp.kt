@@ -16,8 +16,9 @@ enum class Screen {
     HOME,
     FEED,
     TOPICS,
-    RELEVANCE,
+    WEB,
     SETTINGS,
+    RELEVANCE,
     LOGIN,
     SIGNUP
 }
@@ -27,8 +28,9 @@ sealed class NavigationItem(val route: String) {
     data object Home : NavigationItem(Screen.HOME.name)
     data object Feed : NavigationItem(Screen.FEED.name)
     data object Topics : NavigationItem(Screen.TOPICS.name)
-    data object Relevance : NavigationItem(Screen.RELEVANCE.name)
+    data object Web : NavigationItem(Screen.WEB.name)
     data object Settings : NavigationItem(Screen.SETTINGS.name)
+    data object Relevance : NavigationItem(Screen.RELEVANCE.name)
     data object Login : NavigationItem(Screen.LOGIN.name)
     data object Signup : NavigationItem(Screen.SIGNUP.name)
 }
@@ -52,16 +54,19 @@ fun NimbusApp(
             HomeScreen(navController, isDarkMode, modifier)
         }
         composable(NavigationItem.Feed.route) {
-            FeedScreen(navController, "Feed", modifier)
+            FeedScreen(navController, isDarkMode, "Feed", modifier)
         }
         composable(NavigationItem.Topics.route) {
             // TopicsScreen(navController)
         }
-        composable(NavigationItem.Relevance.route) {
-            // RelevanceScreen(navController)
+        composable(NavigationItem.Web.route) {
+            // WebScreen(navController)
         }
         composable(NavigationItem.Settings.route) {
             SettingsScreen(navController, isDarkMode, modifier)
+        }
+        composable(NavigationItem.Relevance.route) {
+            // RelevanceScreen(navController)
         }
         composable(NavigationItem.Login.route) {
             // LoginScreen(navController)
