@@ -62,10 +62,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
@@ -114,10 +112,24 @@ fun HomeScreen(
                     if (isDarkMode != null) {
                         FeatureRow(isDarkMode, navController, modifier)
                     }
-                    TopStoriesButton(modifier)
+                    TitleButton(
+                        title = "Top Stories",
+                        onButtonClick = {
+                            // Handle top stories
+                        }
+                    )
                     TopStories(modifier)
                     TopicsHeader(modifier)
                     Topics(modifier)
+                    TitleButton(
+                        title = "Recent",
+                        onButtonClick = {
+                            // Handle recent
+                        }
+                    )
+                    Recent(
+                        modifier = modifier
+                    )
                 }
             }
 
@@ -270,7 +282,7 @@ fun FeatureRow(
                 },
                 imageDark = R.drawable.feed_icon_dark,
                 imageLight = R.drawable.feed_icon_light,
-                title = "My Feed",
+                title = "Recent",
                 modifier = modifier
             )
             FeatureButton(
@@ -280,7 +292,7 @@ fun FeatureRow(
                 },
                 imageDark = R.drawable.news_icon_dark,
                 imageLight = R.drawable.news_icon_light,
-                title = "All News"
+                title = "Top Stories"
             )
             FeatureButton(
                 isDarkMode = isDarkMode,
@@ -359,13 +371,13 @@ fun FeatureButton(
 }
 
 @Composable
-fun TopStoriesButton(
+fun TitleButton(
+    title: String,
+    onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
-        onClick = {
-            // Handle top stories
-        },
+        onClick = onButtonClick,
         colors = ButtonColors(
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.background,
@@ -382,7 +394,7 @@ fun TopStoriesButton(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Top Stories",
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = modifier.padding(18.dp)
@@ -432,7 +444,7 @@ fun TopStoriesMainHeadline(
 ) {
     AsyncImage(
         model = null,
-        contentDescription = "News Image",
+        contentDescription = "Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
             .fillMaxWidth()
@@ -467,7 +479,7 @@ fun TopStoriesSubHeadlines(
         Spacer(modifier = modifier.weight(1f))
         AsyncImage(
             model = null,
-            contentDescription = "News Image",
+            contentDescription = "Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
@@ -601,7 +613,7 @@ fun Topics(
                             }
                             .border(
                                 BorderStroke(
-                                    width = if (selectedTabIndex == index) 2.dp else 0.25.dp,
+                                    width = if (selectedTabIndex == index) 2.dp else 0.5.dp,
                                     color = MaterialTheme.colorScheme.primary
                                 ),
                                 shape = RoundedCornerShape(10.dp)
@@ -693,7 +705,7 @@ fun TopicsSubHeadlines(
     ) {
         AsyncImage(
             model = null,
-            contentDescription = "News Image",
+            contentDescription = "Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
@@ -708,6 +720,88 @@ fun TopicsSubHeadlines(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
             maxLines = 3
+        )
+    }
+}
+
+@Composable
+fun Recent(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column {
+            RecentMainHeadline(
+                modifier = modifier
+            )
+            CustomDivider(modifier)
+            RecentSubHeadlines(
+                modifier = modifier
+            )
+            CustomDivider(modifier)
+            RecentSubHeadlines(
+                modifier = modifier
+            )
+            CustomDivider(modifier)
+            RecentSubHeadlines(
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@Composable
+fun RecentMainHeadline(
+    modifier: Modifier
+) {
+    AsyncImage(
+        model = null,
+        contentDescription = "Image",
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                Shimmer(true, 1000f)
+            )
+    )
+    Spacer(modifier = modifier.height(10.dp))
+    Text(
+        text = "Headline",
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onBackground,
+        maxLines = 3
+    )
+}
+
+@Composable
+fun RecentSubHeadlines(
+    modifier: Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Headline",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground,
+            maxLines = 3
+        )
+        Spacer(modifier = modifier.weight(1f))
+        AsyncImage(
+            model = null,
+            contentDescription = "Image",
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+                .size(75.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    Shimmer(true, 1000f)
+                )
         )
     }
 }
@@ -780,13 +874,3 @@ fun BottomSheet(
 //        Text(text = "38℃")
 //    }
 //}
-
-@Preview
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen(
-        navController = rememberNavController(),
-        isDarkMode = null,
-        modifier = Modifier
-    )
-}

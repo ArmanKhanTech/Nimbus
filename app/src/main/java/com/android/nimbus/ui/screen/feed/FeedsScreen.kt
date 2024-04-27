@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -56,7 +54,7 @@ fun FeedScreen(
     var pageCount by remember {
         mutableIntStateOf(5)
     }
-    var pagerState = rememberPagerState(
+    val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { pageCount }
     )
@@ -70,7 +68,7 @@ fun FeedScreen(
                     navController.popBackStack()
                 }
             )
-        },
+        }
     ) { innerPadding ->
         VerticalPager(
             modifier = modifier
@@ -79,7 +77,7 @@ fun FeedScreen(
             state = pagerState,
             beyondBoundsPageCount = 5,
         ) {
-            DisplayNews(isDarkMode, modifier)
+            DisplayNews(pagerState, isDarkMode, modifier)
         }
 
         LaunchedEffect(pagerState.currentPage) {
@@ -91,8 +89,10 @@ fun FeedScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DisplayNews(
+    pagerState: PagerState,
     isDarkMode: MutableState<Boolean>?,
     modifier: Modifier = Modifier
 ) {
@@ -147,62 +147,94 @@ fun DisplayNews(
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 10.dp)
         ) {
-            OutlinedButton(
-                onClick = {
-                    // handle bookmark
+            ActionButton(
+                title = "Bookmark",
+                padding = PaddingValues(2.dp),
+                size = 30,
+                darkIcon = R.drawable.bookmark_icon_dark,
+                lightIcon = R.drawable.bookmark_icon_light,
+                onButtonClick = {
+
                 },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.background
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary
-                ),
-                contentPadding = PaddingValues(8.dp),
-                shape = CircleShape,
-                modifier = modifier.size(40.dp)
-            ) {
-                if (isDarkMode != null) {
-                    Image(
-                        if (isDarkMode.value) painterResource(R.drawable.bookmark_icon_dark)
-                        else painterResource(R.drawable.bookmark_icon_light),
-                        contentDescription = "Bookmark",
-                        contentScale = ContentScale.FillHeight,
-                        modifier = modifier
-                            .size(30.dp)
-                            .padding(1.dp)
-                    )
-                }
-            }
+                isDarkMode = isDarkMode
+            )
             Spacer(modifier = modifier.width(10.dp))
-            OutlinedButton(
-                onClick = {
-                    // handle share
+            ActionButton(
+                title = "Share",
+                padding = PaddingValues(2.dp),
+                size = 30,
+                darkIcon = R.drawable.share_icon_dark,
+                lightIcon = R.drawable.share_icon_light,
+                onButtonClick = {
+
                 },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.background
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary
-                ),
-                contentPadding = PaddingValues(10.dp),
-                shape = CircleShape,
-                modifier = modifier.size(40.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Share,
-                    contentDescription = "Settings",
-                    modifier = modifier.size(26.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+                isDarkMode = isDarkMode
+            )
+            Spacer(modifier = modifier.width(10.dp))
+            ActionButton(
+                title = "Top",
+                padding = PaddingValues(1.dp),
+                size = 30,
+                darkIcon = R.drawable.top_icon_dark,
+                lightIcon = R.drawable.top_icon_light,
+                onButtonClick = {
+
+                },
+                isDarkMode = isDarkMode
+            )
+            Spacer(modifier = modifier.width(10.dp))
+            ActionButton(
+                title = "Web",
+                padding = PaddingValues(0.dp),
+                size = 30,
+                darkIcon = R.drawable.web_icon_dark,
+                lightIcon = R.drawable.web_icon_light,
+                onButtonClick = {
+
+                },
+                isDarkMode = isDarkMode
+            )
+        }
+    }
+}
+
+@Composable
+fun ActionButton(
+    title: String,
+    padding: PaddingValues,
+    size: Int,
+    onButtonClick: () -> Unit,
+    darkIcon: Int,
+    lightIcon: Int,
+    isDarkMode: MutableState<Boolean>?,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = onButtonClick,
+        colors = ButtonColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.background,
+            disabledContainerColor = MaterialTheme.colorScheme.background,
+            disabledContentColor = MaterialTheme.colorScheme.background
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.primary
+        ),
+        contentPadding = PaddingValues(8.dp),
+        shape = CircleShape,
+        modifier = modifier.size(40.dp)
+    ) {
+        if (isDarkMode != null) {
+            Image(
+                if (isDarkMode.value) painterResource(darkIcon)
+                else painterResource(lightIcon),
+                contentDescription = title,
+                contentScale = ContentScale.FillHeight,
+                modifier = modifier
+                    .size(size.dp)
+                    .padding(padding)
+            )
         }
     }
 }
