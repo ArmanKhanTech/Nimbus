@@ -1,5 +1,8 @@
 package com.android.nimbus.ui.screen.home
 
+import android.app.Application
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,13 +19,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -44,6 +48,7 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -51,6 +56,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -59,6 +65,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -67,6 +74,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
+import com.android.nimbus.model.Results
+import com.android.nimbus.model.TopStoriesModel
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
 import com.android.nimbus.ui.components.Shimmer
 import kotlinx.coroutines.CoroutineScope
@@ -81,9 +90,19 @@ fun HomeScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val sheetState = rememberModalBottomSheetState()
+
     val scope = CoroutineScope(
         context = rememberCoroutineScope().coroutineContext
     )
+
+    val application = LocalContext.current.applicationContext as Application
+    val applicationInfo: ApplicationInfo = application.packageManager
+        .getApplicationInfo(application.packageName, PackageManager.GET_META_DATA)
+    val apiKey = applicationInfo.metaData.getString("NEWS_API_KEY")
+
+    val viewModel = apiKey?.let {
+        HomeViewModel(it)
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -104,33 +123,35 @@ fun HomeScreen(
                 )
             }
         ) { innerPadding ->
-            LazyColumn(
-                modifier = modifier.padding(innerPadding)
+            Column(
+                modifier = modifier
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
             ) {
-                item {
-                    Header(sheetState, scope, modifier)
-                    if (isDarkMode != null) {
-                        FeatureRow(isDarkMode, navController, modifier)
-                    }
-                    TitleButton(
-                        title = "Top Stories",
-                        onButtonClick = {
-                            // Handle top stories
-                        }
-                    )
-                    TopStories(modifier)
-                    TopicsHeader(modifier)
-                    Topics(modifier)
-                    TitleButton(
-                        title = "Recent",
-                        onButtonClick = {
-                            // Handle recent
-                        }
-                    )
-                    Recent(
-                        modifier = modifier
-                    )
+                Header(sheetState, scope, modifier)
+                if (isDarkMode != null) {
+                    FeatureRow(isDarkMode, navController, modifier)
                 }
+                TitleButton(
+                    title = "Top Stories",
+                    onButtonClick = {
+                        // Handle top stories
+                    }
+                )
+                if (viewModel != null) {
+                    TopStories(viewModel, modifier)
+                }
+                TopicsHeader(modifier)
+                Topics(modifier)
+                TitleButton(
+                    title = "Recent",
+                    onButtonClick = {
+                        // Handle recent
+                    }
+                )
+                Recent(
+                    modifier = modifier
+                )
             }
 
             if (sheetState.isVisible) {
@@ -288,7 +309,7 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-
+                    // Handle feature button
                 },
                 imageDark = R.drawable.news_icon_dark,
                 imageLight = R.drawable.news_icon_light,
@@ -397,12 +418,17 @@ fun TitleButton(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = modifier.padding(18.dp)
+                modifier = modifier.padding(
+                    start = 18.dp,
+                    top = 18.dp,
+                    end = 10.dp,
+                    bottom = 18.dp
+                )
             )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = "Settings",
-                modifier = modifier.size(30.dp),
+                modifier = modifier.size(28.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
         }
@@ -411,27 +437,47 @@ fun TitleButton(
 
 @Composable
 fun TopStories(
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
+    var topStories by remember {
+        mutableStateOf(TopStoriesModel())
+    }
+
+    var counter by remember {
+        mutableIntStateOf(0)
+    }
+
+    LaunchedEffect(topStories) {
+        if (counter == 0) {
+            topStories = viewModel.fetchTopStories()
+            counter++
+        }
+    }
+
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column {
+        if (topStories.results.isNotEmpty()) {
             TopStoriesMainHeadline(
+                result = topStories.results[0],
                 modifier = modifier
             )
             CustomDivider(modifier)
             TopStoriesSubHeadlines(
+                result = topStories.results[1],
                 modifier = modifier
             )
             CustomDivider(modifier)
             TopStoriesSubHeadlines(
+                result = topStories.results[2],
                 modifier = modifier
             )
             CustomDivider(modifier)
             TopStoriesSubHeadlines(
+                result = topStories.results[3],
                 modifier = modifier
             )
         }
@@ -440,45 +486,47 @@ fun TopStories(
 
 @Composable
 fun TopStoriesMainHeadline(
+    result: Results,
     modifier: Modifier
 ) {
     AsyncImage(
-        model = null,
+        model = result.multimedia[0].url ?: "",
         contentDescription = "Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(
-                Shimmer(true, 1000f)
-            )
+//                .background(
+//                    Shimmer(true, 1000f)
+//                )
     )
-    Spacer(modifier = modifier.height(10.dp))
     Text(
-        text = "Headline",
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onBackground,
-        maxLines = 3
+        text = result.title ?: "",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onBackground
     )
 }
 
 @Composable
 fun TopStoriesSubHeadlines(
+    result: Results,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Headline",
+            text = result.title ?: "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 3
+            modifier = modifier
+                .weight(1f)
+                .padding(0.dp, 10.dp)
         )
-        Spacer(modifier = modifier.weight(1f))
+        VerticalDivider()
         AsyncImage(
-            model = null,
+            model = result.multimedia[0].url ?: "",
             contentDescription = "Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -710,9 +758,9 @@ fun TopicsSubHeadlines(
             modifier = modifier
                 .size(75.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(
-                    Shimmer(true, 1000f)
-                )
+//                .background(
+//                    Shimmer(true, 1000f)
+//                )
         )
         Spacer(modifier = modifier.weight(1f))
         Text(
@@ -765,9 +813,9 @@ fun RecentMainHeadline(
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(
-                Shimmer(true, 1000f)
-            )
+//            .background(
+//                Shimmer(true, 1000f)
+//            )
     )
     Spacer(modifier = modifier.height(10.dp))
     Text(
@@ -799,9 +847,9 @@ fun RecentSubHeadlines(
             modifier = modifier
                 .size(75.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(
-                    Shimmer(true, 1000f)
-                )
+//                .background(
+//                    Shimmer(true, 1000f)
+//                )
         )
     }
 }
@@ -813,7 +861,7 @@ fun CustomDivider(
     HorizontalDivider(
         thickness = 0.15.dp,
         color = MaterialTheme.colorScheme.primary,
-        modifier = modifier.padding(10.dp, 10.dp)
+        modifier = modifier.padding(10.dp, 0.dp)
     )
 }
 

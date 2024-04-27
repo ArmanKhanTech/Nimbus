@@ -6,7 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.android.nimbus.ui.screen.feed.FeedScreen
 import com.android.nimbus.ui.screen.home.HomeScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
@@ -52,7 +51,7 @@ fun NimbusApp(
             HomeScreen(navController, isDarkMode, modifier)
         }
         composable(NavigationItem.Feed.route) {
-            FeedScreen(navController, isDarkMode, "Feed", modifier)
+//            FeedScreen(navController, isDarkMode, "Feed", modifier)
         }
         composable(NavigationItem.Topics.route) {
             // TopicsScreen(navController)

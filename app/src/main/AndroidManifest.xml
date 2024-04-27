@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:label="@string/app_name"
         android:icon="@mipmap/app_icon"
@@ -7,6 +10,10 @@
         android:supportsRtl="true"
         android:allowBackup="true"
         android:theme="@style/Theme.Nimbus">
+
+        <meta-data
+            android:name="NEWS_API_KEY"
+            android:value="${NEWS_API_KEY}" />
 
         <activity
             android:name=".MainActivity"
