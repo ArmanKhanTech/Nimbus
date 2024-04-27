@@ -24,13 +24,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -75,19 +68,13 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("com.airbnb.android:lottie-compose:4.0.0")
-    implementation("androidx.media3:media3-exoplayer:1.3.1")
-    implementation("androidx.media3:media3-ui:1.3.1")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.1-alpha")
     implementation("androidx.compose.material:material-icons-extended:1.6.6")
     implementation("androidx.datastore:datastore-preferences:1.1.0")
-    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.5.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.6")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
