@@ -6,9 +6,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.android.nimbus.ui.screen.home.HomeScreen
+import com.android.nimbus.ui.screen.auth.screen.LoginScreen
+import com.android.nimbus.ui.screen.auth.screen.SignupScreen
+import com.android.nimbus.ui.screen.feeds.FeedScreen
+import com.android.nimbus.ui.screen.home.screen.HomeScreen
+import com.android.nimbus.ui.screen.home.screen.TopicsScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
+import com.android.nimbus.ui.screen.web.WebScreen
 
 enum class Screen {
     SPLASH,
@@ -51,22 +56,22 @@ fun NimbusApp(
             HomeScreen(navController, isDarkMode, modifier)
         }
         composable(NavigationItem.Feed.route) {
-//            FeedScreen(navController, isDarkMode, "Feed", modifier)
+            FeedScreen(navController, isDarkMode, "Feed", modifier)
         }
         composable(NavigationItem.Topics.route) {
-            // TopicsScreen(navController)
+            TopicsScreen(navController)
         }
         composable(NavigationItem.Web.route) {
-            // WebScreen(navController)
+            WebScreen(navController)
         }
         composable(NavigationItem.Settings.route) {
             SettingsScreen(navController, isDarkMode, modifier)
         }
         composable(NavigationItem.Login.route) {
-            // LoginScreen(navController)
+            LoginScreen(navController)
         }
         composable(NavigationItem.Signup.route) {
-            // SignupScreen(navController)
+            SignupScreen(navController)
         }
     }
 }

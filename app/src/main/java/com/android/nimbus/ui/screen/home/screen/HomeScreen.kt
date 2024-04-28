@@ -1,4 +1,4 @@
-package com.android.nimbus.ui.screen.home
+package com.android.nimbus.ui.screen.home.screen
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
@@ -56,7 +56,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -74,10 +73,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
-import com.android.nimbus.model.Results
-import com.android.nimbus.model.TopStoriesModel
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
 import com.android.nimbus.ui.components.Shimmer
+import com.android.nimbus.ui.screen.home.HomeViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -146,7 +144,7 @@ fun HomeScreen(
                 TitleButton(
                     title = "Recent",
                     onButtonClick = {
-                        // Handle recent
+                        // Handle recent stories
                     }
                 )
                 Recent(
@@ -440,69 +438,47 @@ fun TopStories(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
-    var topStories by remember {
-        mutableStateOf(TopStoriesModel())
-    }
-
-    var counter by remember {
-        mutableIntStateOf(0)
-    }
-
-    LaunchedEffect(topStories) {
-        if (counter == 0) {
-            topStories = viewModel.fetchTopStories()
-            counter++
-        }
-    }
-
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (topStories.results.isNotEmpty()) {
-            TopStoriesMainHeadline(
-                result = topStories.results[0],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopStoriesSubHeadlines(
-                result = topStories.results[1],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopStoriesSubHeadlines(
-                result = topStories.results[2],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopStoriesSubHeadlines(
-                result = topStories.results[3],
-                modifier = modifier
-            )
-        }
+        TopStoriesMainHeadline(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopStoriesSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopStoriesSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopStoriesSubHeadlines(
+            modifier = modifier
+        )
     }
 }
 
 @Composable
 fun TopStoriesMainHeadline(
-    result: Results,
     modifier: Modifier
 ) {
     AsyncImage(
-        model = result.multimedia[0].url ?: "",
-        contentDescription = "Image",
+        model = null,
+        contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(10.dp))
-//                .background(
-//                    Shimmer(true, 1000f)
-//                )
+            .background(
+                Shimmer(true, 1000f)
+            )
     )
     Text(
-        text = result.title ?: "",
+        text = "Headline",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onBackground
     )
@@ -510,24 +486,22 @@ fun TopStoriesMainHeadline(
 
 @Composable
 fun TopStoriesSubHeadlines(
-    result: Results,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = result.title ?: "",
+            text = "Headline",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier
                 .weight(1f)
-                .padding(0.dp, 10.dp)
         )
         VerticalDivider()
         AsyncImage(
-            model = result.multimedia[0].url ?: "",
-            contentDescription = "Image",
+            model = null,
+            contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
@@ -581,6 +555,8 @@ fun TopicsHeader(
 fun Topics(
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
+
     val images = listOf(
         R.drawable.arts,
         R.drawable.business,
@@ -628,8 +604,6 @@ fun Topics(
     LaunchedEffect(key1 = pagerState.currentPage) {
         selectedTabIndex = pagerState.currentPage
     }
-
-    val scope = rememberCoroutineScope()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -718,6 +692,7 @@ fun TopicsPage(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier.padding(18.dp, 0.dp)
     ) {
         TopicsSubHeadlines(
@@ -753,21 +728,21 @@ fun TopicsSubHeadlines(
     ) {
         AsyncImage(
             model = null,
-            contentDescription = "Image",
+            contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
                 .clip(RoundedCornerShape(10.dp))
-//                .background(
-//                    Shimmer(true, 1000f)
-//                )
+                .background(
+                    Shimmer(true, 1000f)
+                )
         )
         Spacer(modifier = modifier.weight(1f))
         Text(
+
             text = "Headline",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 3
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -778,26 +753,24 @@ fun Recent(
 ) {
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column {
-            RecentMainHeadline(
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            RecentSubHeadlines(
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            RecentSubHeadlines(
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            RecentSubHeadlines(
-                modifier = modifier
-            )
-        }
+        RecentMainHeadline(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        RecentSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        RecentSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        RecentSubHeadlines(
+            modifier = modifier
+        )
     }
 }
 
@@ -807,22 +780,20 @@ fun RecentMainHeadline(
 ) {
     AsyncImage(
         model = null,
-        contentDescription = "Image",
+        contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(10.dp))
-//            .background(
-//                Shimmer(true, 1000f)
-//            )
+            .background(
+                Shimmer(true, 1000f)
+            )
     )
-    Spacer(modifier = modifier.height(10.dp))
     Text(
         text = "Headline",
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onBackground,
-        maxLines = 3
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onBackground
     )
 }
 
@@ -836,20 +807,19 @@ fun RecentSubHeadlines(
         Text(
             text = "Headline",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 3
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = modifier.weight(1f))
         AsyncImage(
             model = null,
-            contentDescription = "Image",
+            contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
                 .clip(RoundedCornerShape(10.dp))
-//                .background(
-//                    Shimmer(true, 1000f)
-//                )
+                .background(
+                    Shimmer(true, 1000f)
+                )
         )
     }
 }

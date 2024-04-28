@@ -7,20 +7,10 @@ class SharedPreferenceUtility(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("Nimbus", Context.MODE_PRIVATE)
 
-    fun saveStringData(key: String, value: String) {
-        val editor = sharedPreferences.edit()
-        editor.putString(key, value)
-        editor.apply()
-    }
-
     fun saveBooleanData(key: String, value: Boolean) {
         val editor = sharedPreferences.edit()
         editor.putBoolean(key, value)
         editor.apply()
-    }
-
-    fun getStringData(key: String, defaultValue: String): String {
-        return sharedPreferences.getString(key, defaultValue) ?: defaultValue
     }
 
     fun getBooleanData(key: String, defaultValue: Boolean): Boolean {

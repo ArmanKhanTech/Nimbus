@@ -24,6 +24,7 @@ fun SplashScreen(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
+
     LaunchedEffect(key1 = null) {
         scope.launch {
             kotlinx.coroutines.delay(2000)

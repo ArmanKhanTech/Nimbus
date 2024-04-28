@@ -1,4 +1,4 @@
-package com.android.nimbus.ui.screen.feed
+package com.android.nimbus.ui.screen.feeds
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -54,6 +54,7 @@ fun FeedScreen(
     var pageCount by remember {
         mutableIntStateOf(5)
     }
+
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { pageCount }
@@ -79,7 +80,6 @@ fun FeedScreen(
         ) {
             DisplayNews(pagerState, isDarkMode, modifier)
         }
-
         LaunchedEffect(pagerState.currentPage) {
             val currentPage = pagerState.currentPage
             if (currentPage % 5 == 0) {
@@ -125,7 +125,7 @@ fun DisplayNews(
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Headline",
+            text = "Summary",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier.padding(horizontal = 16.dp),
