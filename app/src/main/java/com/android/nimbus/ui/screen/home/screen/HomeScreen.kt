@@ -1,5 +1,6 @@
 package com.android.nimbus.ui.screen.home.screen
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -56,6 +58,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -71,8 +74,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
+import com.android.nimbus.model.Articles
+import com.android.nimbus.model.NewsModel
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
 import com.android.nimbus.ui.components.Shimmer
 import com.android.nimbus.ui.screen.home.HomeViewModel
@@ -136,11 +142,15 @@ fun HomeScreen(
                         // Handle top stories
                     }
                 )
-                if (viewModel != null) {
-                    TopStories(viewModel, modifier)
-                }
+                TopStories(
+                    viewModel = viewModel ?: HomeViewModel(""),
+                    modifier
+                )
                 TopicsHeader(modifier)
-                Topics(modifier)
+                Topics(
+                    viewModel = viewModel ?: HomeViewModel(""),
+                    modifier
+                )
                 TitleButton(
                     title = "Recent",
                     onButtonClick = {
@@ -148,6 +158,7 @@ fun HomeScreen(
                     }
                 )
                 Recent(
+                    viewModel = viewModel ?: HomeViewModel(""),
                     modifier = modifier
                 )
             }
@@ -438,24 +449,36 @@ fun TopStories(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
+    var topStories by remember {
+        mutableStateOf<NewsModel?>(null)
+    }
+
+    LaunchedEffect(Unit) {
+        topStories = viewModel.fetchTopStories()
+    }
+
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopStoriesMainHeadline(
+            article = topStories?.articles?.get(0) ?: Articles(),
             modifier = modifier
         )
         CustomDivider(modifier)
         TopStoriesSubHeadlines(
+            article = topStories?.articles?.get(1) ?: Articles(),
             modifier = modifier
         )
         CustomDivider(modifier)
         TopStoriesSubHeadlines(
+            article = topStories?.articles?.get(2) ?: Articles(),
             modifier = modifier
         )
         CustomDivider(modifier)
         TopStoriesSubHeadlines(
+            article = topStories?.articles?.get(3) ?: Articles(),
             modifier = modifier
         )
     }
@@ -463,10 +486,11 @@ fun TopStories(
 
 @Composable
 fun TopStoriesMainHeadline(
+    article: Articles,
     modifier: Modifier
 ) {
-    AsyncImage(
-        model = null,
+    SubcomposeAsyncImage(
+        model = article.media,
         contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
@@ -478,7 +502,7 @@ fun TopStoriesMainHeadline(
             )
     )
     Text(
-        text = "Headline",
+        text = article.title ?: "",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onBackground
     )
@@ -486,21 +510,24 @@ fun TopStoriesMainHeadline(
 
 @Composable
 fun TopStoriesSubHeadlines(
+    article: Articles,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Headline",
+            text = article.title ?: "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier
                 .weight(1f)
         )
-        VerticalDivider()
-        AsyncImage(
-            model = null,
+        VerticalDivider(
+            modifier = modifier.width(20.dp)
+        )
+        SubcomposeAsyncImage(
+            model = article.media,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -550,49 +577,49 @@ fun TopicsHeader(
     }
 }
 
+@SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Topics(
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
 
     val images = listOf(
-        R.drawable.arts,
+        R.drawable.beauty,
         R.drawable.business,
-        R.drawable.climate,
-        R.drawable.economy,
-        R.drawable.education,
-        R.drawable.fashion,
-        R.drawable.health,
-        R.drawable.jobs,
-        R.drawable.movie,
+        R.drawable.economics,
+        R.drawable.energy,
+        R.drawable.entertainment,
+        R.drawable.finance,
+        R.drawable.food,
+        R.drawable.gaming,
         R.drawable.music,
         R.drawable.politics,
         R.drawable.science,
         R.drawable.sports,
-        R.drawable.space,
-        R.drawable.technology,
+        R.drawable.tech,
         R.drawable.travel,
+        R.drawable.world
     )
 
     val titles = listOf(
-        "Arts",
+        "Beauty",
         "Business",
-        "Climate",
-        "Economy",
-        "Education",
-        "Fashion",
-        "Health",
-        "Jobs",
-        "Movie",
+        "Economics",
+        "Energy",
+        "Entertainment",
+        "Finance",
+        "Food",
+        "Gaming",
         "Music",
         "Politics",
         "Science",
         "Sports",
-        "Space",
-        "Technology",
+        "Tech",
         "Travel",
+        "World"
     )
 
     val pagerState = rememberPagerState(pageCount = { titles.size })
@@ -601,7 +628,19 @@ fun Topics(
         mutableIntStateOf(0)
     }
 
+    var topics by remember {
+        mutableStateOf<NewsModel?>(null)
+    }
+
+    val visited by remember {
+        mutableStateOf<ArrayList<String>>(arrayListOf())
+    }
+
     LaunchedEffect(key1 = pagerState.currentPage) {
+        if (!visited.contains(titles[pagerState.currentPage])) {
+            visited.add(titles[pagerState.currentPage])
+            topics = viewModel.fetchTopics(titles[pagerState.currentPage])
+        }
         selectedTabIndex = pagerState.currentPage
     }
 
@@ -749,26 +788,39 @@ fun TopicsSubHeadlines(
 
 @Composable
 fun Recent(
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
+    var recent by remember {
+        mutableStateOf<NewsModel?>(null)
+    }
+
+    LaunchedEffect(Unit) {
+        recent = viewModel.fetchRecent()
+    }
+
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RecentMainHeadline(
+            article = recent?.articles?.get(0) ?: Articles(),
             modifier = modifier
         )
         CustomDivider(modifier)
         RecentSubHeadlines(
+            article = recent?.articles?.get(1) ?: Articles(),
             modifier = modifier
         )
         CustomDivider(modifier)
         RecentSubHeadlines(
+            article = recent?.articles?.get(2) ?: Articles(),
             modifier = modifier
         )
         CustomDivider(modifier)
         RecentSubHeadlines(
+            article = recent?.articles?.get(3) ?: Articles(),
             modifier = modifier
         )
     }
@@ -776,10 +828,11 @@ fun Recent(
 
 @Composable
 fun RecentMainHeadline(
+    article: Articles,
     modifier: Modifier
 ) {
-    AsyncImage(
-        model = null,
+    SubcomposeAsyncImage(
+        model = article.media,
         contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
@@ -791,7 +844,7 @@ fun RecentMainHeadline(
             )
     )
     Text(
-        text = "Headline",
+        text = article.title ?: "",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onBackground
     )
@@ -799,19 +852,22 @@ fun RecentMainHeadline(
 
 @Composable
 fun RecentSubHeadlines(
+    article: Articles,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Headline",
+            text = article.title ?: "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
-        Spacer(modifier = modifier.weight(1f))
-        AsyncImage(
-            model = null,
+        VerticalDivider(
+            modifier = modifier.width(20.dp)
+        )
+        SubcomposeAsyncImage(
+            model = article.media,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
