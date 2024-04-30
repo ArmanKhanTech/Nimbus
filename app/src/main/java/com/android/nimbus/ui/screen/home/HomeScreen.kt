@@ -77,6 +77,8 @@ import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
+import com.android.nimbus.data.topicsImages
+import com.android.nimbus.data.topicsTitles
 import com.android.nimbus.model.Articles
 import com.android.nimbus.model.NewsModel
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
@@ -586,43 +588,7 @@ fun Topics(
 ) {
     val scope = rememberCoroutineScope()
 
-    val images = listOf(
-        R.drawable.beauty,
-        R.drawable.business,
-        R.drawable.economics,
-        R.drawable.energy,
-        R.drawable.entertainment,
-        R.drawable.finance,
-        R.drawable.food,
-        R.drawable.gaming,
-        R.drawable.music,
-        R.drawable.politics,
-        R.drawable.science,
-        R.drawable.sports,
-        R.drawable.tech,
-        R.drawable.travel,
-        R.drawable.world
-    )
-
-    val titles = listOf(
-        "Beauty",
-        "Business",
-        "Economics",
-        "Energy",
-        "Entertainment",
-        "Finance",
-        "Food",
-        "Gaming",
-        "Music",
-        "Politics",
-        "Science",
-        "Sports",
-        "Tech",
-        "Travel",
-        "World"
-    )
-
-    val pagerState = rememberPagerState(pageCount = { titles.size })
+    val pagerState = rememberPagerState(pageCount = { topicsTitles.size })
 
     var selectedTabIndex by remember {
         mutableIntStateOf(0)
@@ -637,9 +603,9 @@ fun Topics(
     }
 
     LaunchedEffect(key1 = pagerState.currentPage) {
-        if (!visited.contains(titles[pagerState.currentPage])) {
-            visited.add(titles[pagerState.currentPage])
-            topics = viewModel.fetchTopics(titles[pagerState.currentPage])
+        if (!visited.contains(topicsTitles[pagerState.currentPage])) {
+            visited.add(topicsTitles[pagerState.currentPage])
+            topics = viewModel.fetchTopics(topicsTitles[pagerState.currentPage])
         }
         selectedTabIndex = pagerState.currentPage
     }
@@ -652,14 +618,14 @@ fun Topics(
             indicator = {},
             divider = {}
         ) {
-            images.forEachIndexed { index, _ ->
+            topicsImages.forEachIndexed { index, _ ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Spacer(modifier = modifier.weight(1f))
                     Image(
-                        painter = painterResource(images[index]),
-                        contentDescription = titles[index],
+                        painter = painterResource(topicsImages[index]),
+                        contentDescription = topicsTitles[index],
                         contentScale = ContentScale.Crop,
                         modifier = modifier
                             .size(if (selectedTabIndex == index) 75.dp else 60.dp)
@@ -688,7 +654,7 @@ fun Topics(
             selectedTabIndex = selectedTabIndex,
             divider = {},
         ) {
-            titles.forEachIndexed { index, title ->
+            topicsTitles.forEachIndexed { index, title ->
                 Tab(
                     text = {
                         Text(
