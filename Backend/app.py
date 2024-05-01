@@ -1,14 +1,9 @@
 from flask import Flask, request, jsonify
 from nimbus import getNews
 from flask_cors import CORS
-from dotenv import load_dotenv
-import os
 
 app = Flask(__name__)
 CORS(app)
-
-load_dotenv()
-api_key = os.environ.get('API_KEY')
 
 @app.route('/')
 def home():
@@ -22,10 +17,10 @@ def news():
     key = request.args.get('key')
     if not key:
       return jsonify({
-        "message": "Please provide a key."
+        "message": "Please provide a API key"
       }), 400
     else:
-      if key == api_key:
+      if key == "tomcat":
         category = request.args.get("category")
         if not category:
           return jsonify({

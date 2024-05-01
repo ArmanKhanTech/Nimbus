@@ -52,7 +52,7 @@ def getNews(category):
 
     if not news_data:
         newsDictionary['success'] = response.json()['error']
-        newsDictionary['error'] = 'Invalid Category'
+        newsDictionary['error'] = 'Invalid category'
         return newsDictionary
 
     for entry in news_data:
