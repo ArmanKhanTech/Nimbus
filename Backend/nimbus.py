@@ -1,9 +1,7 @@
-# Coded by Sumanjay on 29th Feb 2020
 import datetime
 import uuid
 import requests
 import pytz
-
 
 headers = {
     'authority': 'inshorts.com',
@@ -23,21 +21,26 @@ headers = {
 
 params = (
     ('category', 'top_stories'),
-    ('max_limit', '10'),
+    ('max_limit', '25'),
     ('include_card_data', 'true')
 )
 
-
 def getNews(category):
-    if category == 'all':
+    if category == 'all_news':
         response = requests.get(
-            'https://inshorts.com/api/en/news?category=all_news&max_limit=10&include_card_data=true')
+            'https://inshorts.com/api/en/news?category=all_news&max_limit=25&include_card_data=true')
+    elif category == 'trending':
+        response = requests.get(
+            'https://inshorts.com/api/en/news?category=trending&max_limit=25&include_card_data=true')
+    elif category == 'top_stories':
+        response = requests.get(
+            'https://inshorts.com/api/en/news?category=top_stories&max_limit=25&include_card_data=true')
     else:
         response = requests.get(
             f'https://inshorts.com/api/en/search/trending_topics/{category}', headers=headers, params=params)
     try:
         news_data = response.json()['data']['news_list']
-    except Exception as e:
+    except Exception as _:
         print(response.text)
         news_data = None
 

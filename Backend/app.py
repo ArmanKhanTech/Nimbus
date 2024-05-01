@@ -1,24 +1,42 @@
 from flask import Flask, request, jsonify
-from inshorts import getNews
+from nimbus import getNews
 from flask_cors import CORS
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
-app.secret_key = "i_am_not_feeling_sleepy_so_i_am_coding_this"
 CORS(app)
+
+load_dotenv()
+api_key = os.environ.get('API_KEY')
 
 @app.route('/')
 def home():
-    return 'News API is UP!<br><br>A part of <a href="https://t.me/sjprojects">Sj Projects</a>'
+    return jsonify({
+        "message": "Nimbus API."
+    }), 200
 
 @app.route('/news')
 def news():
-    if request.method == 'GET':
+  if request.method == 'GET':
+    key = request.args.get('key')
+    if not key:
+      return jsonify({
+        "message": "Please provide a key."
+      }), 400
+    else:
+      if key == api_key:
         category = request.args.get("category")
         if not category:
-            return jsonify({
-                "error": "please add category in query params"
-            }), 404
+          return jsonify({
+            "error": "Please add category in query params"
+          }), 404
         return jsonify(getNews(category)), 200
+      else:
+        return jsonify({
+          "error": "Invalid API key"
+        }), 401
+
 
 if __name__ == '__main__':
     app.debug = True
