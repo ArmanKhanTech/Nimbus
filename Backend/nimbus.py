@@ -3,28 +3,6 @@ import uuid
 import requests
 import pytz
 
-headers = {
-    'authority': 'inshorts.com',
-    'accept': '*/*',
-    'accept-language': 'en-GB,en;q=0.5',
-    'content-type': 'application/json',
-    'referer': 'https://inshorts.com/en/read',
-    'sec-ch-ua': '"Not/A)Brand";v="99", "Brave";v="115", "Chromium";v="115"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"macOS"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-origin',
-    'sec-gpc': '1',
-    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
-}
-
-params = (
-    ('category', 'top_stories'),
-    ('max_limit', '25'),
-    ('include_card_data', 'true')
-)
-
 def getNews(category):
     if category == 'all_news':
         response = requests.get(
@@ -37,7 +15,7 @@ def getNews(category):
             'https://inshorts.com/api/en/news?category=top_stories&max_limit=25&include_card_data=true')
     else:
         response = requests.get(
-            f'https://inshorts.com/api/en/search/trending_topics/{category}', headers=headers, params=params)
+            f'https://inshorts.com/api/en/search/trending_topics/{category}&max_limit=25&include_card_data=true')
     try:
         news_data = response.json()['data']['news_list']
     except Exception as _:
