@@ -1,0 +1,10 @@
+{
+  "name": "Nimbus-News-API",
+  "description": "News API for Nimbus",
+  "keywords": [
+    "flask",
+    "python",
+    "news",
+    "inshorts"
+  ]
+}
