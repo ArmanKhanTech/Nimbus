@@ -12,7 +12,7 @@ def home():
     }), 200
 
 @app.route('/news')
-async def news():
+def news():
   if request.method == 'GET':
     key = request.args.get('key')
     if not key:
