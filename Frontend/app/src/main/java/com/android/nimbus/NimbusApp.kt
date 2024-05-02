@@ -13,6 +13,7 @@ import com.android.nimbus.ui.screen.home.HomeScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
 import com.android.nimbus.ui.screen.web.WebScreen
+import com.android.nimbus.viewmodel.ViewModel
 
 enum class Screen {
     SPLASH,
@@ -40,6 +41,7 @@ fun NimbusApp(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+    val viewModel = ViewModel()
 
     NavHost(
         modifier = Modifier,
@@ -50,7 +52,7 @@ fun NimbusApp(
             SplashScreen(navController, modifier)
         }
         composable(NavigationItem.Home.route) {
-            HomeScreen(navController, isDarkMode, modifier)
+            HomeScreen(navController, isDarkMode, viewModel, modifier)
         }
         composable(NavigationItem.Feed.route) {
             FeedScreen(navController, isDarkMode, "Feed", modifier)

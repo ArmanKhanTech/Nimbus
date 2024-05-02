@@ -49,7 +49,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -62,7 +61,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -70,9 +68,9 @@ import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
+import com.android.nimbus.data.topics
 import com.android.nimbus.data.topicsImages
-import com.android.nimbus.data.topicsTitles
-import com.android.nimbus.model.Articles
+import com.android.nimbus.model.Data
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
 import com.android.nimbus.ui.components.Shimmer
 import com.android.nimbus.viewmodel.ViewModel
@@ -84,10 +82,9 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavController,
     isDarkMode: MutableState<Boolean>?,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-    val nimbusViewModel = ViewModel(LocalContext.current)
-
     val scope = CoroutineScope(context = rememberCoroutineScope().coroutineContext)
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -128,12 +125,12 @@ fun HomeScreen(
                     }
                 )
                 TopStories(
-                    nimbusViewModel,
+                    viewModel,
                     modifier
                 )
                 TopicsHeader(modifier)
                 Topics(
-                    nimbusViewModel,
+                    viewModel,
                     modifier
                 )
                 TitleButton(
@@ -143,7 +140,7 @@ fun HomeScreen(
                     }
                 )
                 Recent(
-                    nimbusViewModel,
+                    viewModel,
                     modifier = modifier
                 )
             }
@@ -431,38 +428,34 @@ fun TitleButton(
 
 @Composable
 fun TopStories(
-    nimbusViewModel: ViewModel,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-    val topStories = nimbusViewModel.topStories.collectAsState()
+    val topStories = viewModel.news.collectAsState()
 
-    LaunchedEffect(Unit) {
-        nimbusViewModel.fetchTopStories()
-    }
-
-    if(topStories.value.articles.isNotEmpty()){
+    if(topStories.value[0].data.isNotEmpty()){
         Column(
             modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopStoriesMainHeadline(
-                article = topStories.value.articles[0],
+                data = topStories.value[1].data[0],
                 modifier = modifier
             )
             CustomDivider(modifier)
             TopStoriesSubHeadlines(
-                article = topStories.value.articles[1],
+                data = topStories.value[1].data[2],
                 modifier = modifier
             )
             CustomDivider(modifier)
             TopStoriesSubHeadlines(
-                article = topStories.value.articles[2],
+                data = topStories.value[1].data[3],
                 modifier = modifier
             )
             CustomDivider(modifier)
             TopStoriesSubHeadlines(
-                article = topStories.value.articles[3],
+                data = topStories.value[1].data[4],
                 modifier = modifier
             )
         }
@@ -471,11 +464,11 @@ fun TopStories(
 
 @Composable
 fun TopStoriesMainHeadline(
-    article: Articles,
+    data: Data,
     modifier: Modifier
 ) {
     AsyncImage(
-        model = article.media,
+        model = data.imageUrl,
         contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
@@ -488,7 +481,7 @@ fun TopStoriesMainHeadline(
         error = painterResource(id = R.drawable.placeholder)
     )
     Text(
-        text = article.title ?: "",
+        text = data.title ?: "",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onBackground
     )
@@ -496,14 +489,14 @@ fun TopStoriesMainHeadline(
 
 @Composable
 fun TopStoriesSubHeadlines(
-    article: Articles,
+    data: Data,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = article.title ?: "",
+            text = data.title ?: "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier
@@ -513,7 +506,7 @@ fun TopStoriesSubHeadlines(
             modifier = modifier.width(20.dp)
         )
         AsyncImage(
-            model = article.media,
+            model = data.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -555,14 +548,14 @@ fun Topics(
     nimbusViewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-    val pagerState = rememberPagerState(pageCount = { topicsTitles.size })
+    val pagerState = rememberPagerState(pageCount = { topics.size })
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
-    val topics = nimbusViewModel.topics.collectAsState()
-
-    LaunchedEffect(selectedTabIndex) {
-        nimbusViewModel.fetchTopics(topicsTitles[selectedTabIndex])
-    }
+//    val topics = nimbusViewModel.topics.collectAsState()
+//
+//    LaunchedEffect(selectedTabIndex) {
+//        nimbusViewModel.fetchTopics(topicsTitles[selectedTabIndex])
+//    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -579,7 +572,7 @@ fun Topics(
                     Spacer(modifier = modifier.weight(1f))
                     Image(
                         painter = painterResource(topicsImages[index]),
-                        contentDescription = topicsTitles[index],
+                        contentDescription = topics[index],
                         contentScale = ContentScale.Crop,
                         modifier = modifier
                             .size(if (selectedTabIndex == index) 75.dp else 60.dp)
@@ -604,7 +597,7 @@ fun Topics(
             selectedTabIndex = selectedTabIndex,
             divider = {},
         ) {
-            topicsTitles.forEachIndexed { index, title ->
+            topics.forEachIndexed { index, title ->
                 Tab(
                     text = {
                         Text(
@@ -626,13 +619,11 @@ fun Topics(
         HorizontalPager(
             state = pagerState
         ) {
-            if (topics.value.isNotEmpty()) {
-                TopicsPage(
-                    topic = topicsTitles[selectedTabIndex],
-                    nimbusViewModel = nimbusViewModel,
-                    modifier = modifier
-                )
-            }
+            TopicsPage(
+                topic = topics[selectedTabIndex],
+                nimbusViewModel = nimbusViewModel,
+                modifier = modifier
+            )
         }
     }
 }
@@ -643,54 +634,51 @@ fun TopicsPage(
     nimbusViewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-    val selectedTopic = nimbusViewModel.selectedTopic.collectAsState()
+//    val selectedTopic = nimbusViewModel.selectedTopic.collectAsState()
+//
+//    LaunchedEffect(topic) {
+//        nimbusViewModel.getFilteredTopics(topic)
+//    }
 
-    LaunchedEffect(topic) {
-        nimbusViewModel.getFilteredTopics(topic)
-    }
-
-    if (selectedTopic.value.articles.isNotEmpty()) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = modifier.padding(18.dp, 0.dp)
-        ) {
-            TopicsSubHeadlines(
-                article = selectedTopic.value.articles[0],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopicsSubHeadlines(
-                article = selectedTopic.value.articles[1],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopicsSubHeadlines(
-                article = selectedTopic.value.articles[2],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopicsSubHeadlines(
-                article = selectedTopic.value.articles[3],
-                modifier = modifier
-            )
-            Text(
-                text = "View More",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = modifier
-                    .padding(0.dp, 20.dp)
-                    .clickable {
-                        // Handle view more
-                    }
-            )
-        }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier.padding(18.dp, 0.dp)
+    ) {
+        TopicsSubHeadlines(
+//            article = selectedTopic.value.articles[0],
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopicsSubHeadlines(
+//            article = selectedTopic.value.articles[1],
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopicsSubHeadlines(
+//            article = selectedTopic.value.articles[2],
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopicsSubHeadlines(
+//            article = selectedTopic.value.articles[3],
+            modifier = modifier
+        )
+        Text(
+            text = "View More",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = modifier
+                .padding(0.dp, 20.dp)
+                .clickable {
+                    // Handle view more
+                }
+        )
     }
 }
 
 @Composable
 fun TopicsSubHeadlines(
-    article: Articles,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -721,48 +709,41 @@ fun Recent(
     nimbusViewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-    val recent = nimbusViewModel.recent.collectAsState()
+//    val recent = nimbusViewModel.recent.collectAsState()
+//
+//    LaunchedEffect(Unit) {
+//        nimbusViewModel.fetchRecent()
+//    }
 
-    LaunchedEffect(Unit) {
-        nimbusViewModel.fetchRecent()
-    }
-
-    if (recent.value.articles.isNotEmpty()) {
-        Column(
-            modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            RecentMainHeadline(
-                article = recent.value.articles[0],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            RecentSubHeadlines(
-                article = recent.value.articles[1],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            RecentSubHeadlines(
-                article = recent.value.articles[2],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            RecentSubHeadlines(
-                article = recent.value.articles[3],
-                modifier = modifier
-            )
-        }
+    Column(
+        modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        RecentMainHeadline(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        RecentSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        RecentSubHeadlines(
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        RecentSubHeadlines(
+            modifier = modifier
+        )
     }
 }
 
 @Composable
 fun RecentMainHeadline(
-    article: Articles,
     modifier: Modifier
 ) {
     SubcomposeAsyncImage(
-        model = article.media,
+        model = null,
         contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
@@ -774,7 +755,7 @@ fun RecentMainHeadline(
             )
     )
     Text(
-        text = article.title ?: "",
+        text = "",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onBackground
     )
@@ -782,14 +763,13 @@ fun RecentMainHeadline(
 
 @Composable
 fun RecentSubHeadlines(
-    article: Articles,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = article.title ?: "",
+            text = "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -797,7 +777,7 @@ fun RecentSubHeadlines(
             modifier = modifier.width(20.dp)
         )
         SubcomposeAsyncImage(
-            model = article.media,
+            model = null,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier

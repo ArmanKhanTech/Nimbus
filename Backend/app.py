@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from nimbus import getNews
+from nimbus import get_news
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -12,7 +12,7 @@ def home():
     }), 200
 
 @app.route('/news')
-def news():
+async def news():
   if request.method == 'GET':
     key = request.args.get('key')
     if not key:
@@ -21,16 +21,7 @@ def news():
       }), 400
     else:
       if key == "tomcat":
-        category = request.args.get("category")
-        if not category:
-          return jsonify({
-            "error": "Please add category in query params"
-          }), 404
-        return jsonify(getNews(category)), 200
-      else:
-        return jsonify({
-          "error": "Invalid API key"
-        }), 401
+        return jsonify(get_news()), 200
 
 
 if __name__ == '__main__':

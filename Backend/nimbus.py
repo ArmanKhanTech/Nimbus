@@ -3,30 +3,58 @@ import uuid
 import requests
 import pytz
 
-def getNews(category):
-    if category == 'all_news':
-        response = requests.get(
-            'https://inshorts.com/api/en/news?category=all_news&max_limit=25&include_card_data=true')
-    elif category == 'trending':
-        response = requests.get(
-            'https://inshorts.com/api/en/news?category=trending&max_limit=25&include_card_data=true')
-    elif category == 'top_stories':
-        response = requests.get(
-            'https://inshorts.com/api/en/news?category=top_stories&max_limit=25&include_card_data=true')
-    else:
-        response = requests.get(
-            f'https://inshorts.com/api/en/search/trending_topics/{category}&max_limit=25&include_card_data=true')
+categories = [
+    'all_news',
+    'trending',
+    'top_stories',
+    'national',
+    'business',
+    'politics',
+    'technology',
+    'startup',
+    'entertainment',
+    'sports',
+    'science',
+    'automobile',
+    'world',
+    'miscellaneous',
+]
+
+newsDictionary = {
+    'success': True,
+    'data': []
+}
+
+def get_news():
+    for category in categories:
+        if category == 'all_news':
+            set_news(requests.get(
+                'https://inshorts.com/api/en/news?category=all_news&max_limit=20&include_card_data=true'),
+                category
+            )
+        elif category == 'trending':
+            set_news(requests.get(
+                'https://inshorts.com/api/en/news?category=trending&max_limit=20&include_card_data=true'),
+                category
+            )
+        elif category == 'top_stories':
+            set_news(requests.get(
+                'https://inshorts.com/api/en/news?category=top_stories&max_limit=20&include_card_data=true'),
+                category
+            )
+        else:
+            set_news(requests.get(
+                f'https://inshorts.com/api/en/search/trending_topics/{category}&max_limit=10&include_card_data=true'),
+                category
+            )
+
+    return newsDictionary
+
+def set_news(response, category):
     try:
         news_data = response.json()['data']['news_list']
     except Exception as _:
-        print(response.text)
         news_data = None
-
-    newsDictionary = {
-        'success': True,
-        'category': category,
-        'data': []
-    }
 
     if not news_data:
         newsDictionary['success'] = response.json()['error']
@@ -54,6 +82,7 @@ def getNews(category):
             newsObject = {
                 'id': uuid.uuid4().hex,
                 'title': title,
+                'category': category,
                 'imageUrl': imageUrl,
                 'url': url,
                 'content': content,
@@ -63,6 +92,6 @@ def getNews(category):
                 'readMoreUrl': readMoreUrl
             }
             newsDictionary['data'].append(newsObject)
+
         except Exception:
             print(entry)
-    return newsDictionary
