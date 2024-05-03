@@ -4,25 +4,28 @@ import requests
 import pytz
 
 categories = [
-    'all_news',
-    'trending',
-    'top_stories',
-    'national',
-    'business',
-    'politics',
-    'technology',
-    'startup',
-    'entertainment',
-    'sports',
-    'science',
-    'automobile',
-    'world',
-    'miscellaneous',
+    "all_news",
+    "trending",
+    "top_stories",
+    "automobile",
+    "business",
+    "education",
+    "entertainment",
+    "fashion",
+    "health",
+    "international",
+    "miscellaneous",
+    "politics",
+    "science",
+    "sports",
+    "startups",
+    "technology",
+    "travel",
 ]
 
 newsDictionary = {
+    'articles': [],
     'success': True,
-    'data': []
 }
 
 def get_news():
@@ -58,7 +61,6 @@ def set_news(response, category):
 
     if not news_data:
         newsDictionary['success'] = response.json()['error']
-        newsDictionary['error'] = 'Invalid category'
         return newsDictionary
 
     for entry in news_data:
@@ -91,7 +93,7 @@ def set_news(response, category):
                 'time': time,
                 'readMoreUrl': readMoreUrl
             }
-            newsDictionary['data'].append(newsObject)
+            newsDictionary['articles'].append(newsObject)
 
         except Exception:
-            print(entry)
+            pass

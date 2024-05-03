@@ -14,14 +14,7 @@ def home():
 @app.route('/news')
 def news():
   if request.method == 'GET':
-    key = request.args.get('key')
-    if not key:
-      return jsonify({
-        "message": "Please provide a API key"
-      }), 400
-    else:
-      if key == "tomcat":
-        return jsonify(get_news()), 200
+    return jsonify(get_news()), 200
 
 
 if __name__ == '__main__':
