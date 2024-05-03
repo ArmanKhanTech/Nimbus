@@ -31,7 +31,9 @@ newsDictionary = {
 }
 
 async def fetch(session, url, category):
-    async with session.get(url) as response:
+    timestamp = datetime.datetime.now().timestamp()
+    url_with_timestamp = f"{url}&timestamp={timestamp}"
+    async with session.get(url_with_timestamp) as response:
         return await response.text(), category
 
 async def get_news():
@@ -39,13 +41,13 @@ async def get_news():
         tasks = []
         for category in categories:
             if category == 'all_news':
-                url = 'https://inshorts.com/api/en/news?category=all_news&max_limit=20&include_card_data=true'
+                url = 'https://inshorts.com/api/en/news?category=all_news&max_limit=50&include_card_data=true'
             elif category == 'trending':
-                url = 'https://inshorts.com/api/en/news?category=trending&max_limit=20&include_card_data=true'
+                url = 'https://inshorts.com/api/en/news?category=trending&max_limit=50&include_card_data=true'
             elif category == 'top_stories':
-                url = 'https://inshorts.com/api/en/news?category=top_stories&max_limit=20&include_card_data=true'
+                url = 'https://inshorts.com/api/en/news?category=top_stories&max_limit=50&include_card_data=true'
             else:
-                url = f'https://inshorts.com/api/en/search/trending_topics/{category}&max_limit=2W0&include_card_data=true&type=NEWS_CATEGORY'
+                url = f'https://inshorts.com/api/en/search/trending_topics/{category}&max_limit=50&include_card_data=true&type=NEWS_CATEGORY'
             tasks.append(fetch(session, url, category))
 
         responses = await asyncio.gather(*tasks)
