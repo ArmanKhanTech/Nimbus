@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
-from nimbus import get_news
 from flask_cors import CORS
 import asyncio
+
+from nimbus import get_news
 
 app = Flask(__name__)
 CORS(app)
