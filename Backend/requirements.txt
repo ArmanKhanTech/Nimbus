@@ -2,4 +2,3 @@ flask
 flask_cors
 pytz
 aiohttp
-asyncio
