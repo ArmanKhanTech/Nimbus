@@ -49,7 +49,7 @@ fun NimbusApp(
         startDestination = NavigationItem.Splash.route
     ) {
         composable(NavigationItem.Splash.route) {
-            SplashScreen(navController, modifier)
+            SplashScreen(navController, viewModel, modifier)
         }
         composable(NavigationItem.Home.route) {
             HomeScreen(navController, isDarkMode, viewModel, modifier)

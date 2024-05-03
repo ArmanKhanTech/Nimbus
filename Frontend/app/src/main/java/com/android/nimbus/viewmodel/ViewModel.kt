@@ -17,13 +17,15 @@ class ViewModel() : ViewModel() {
         .build()
         .create(NewsAPI::class.java)
 
-    var news = MutableStateFlow(mutableListOf(NewsModel()))
+    private var news = MutableStateFlow(NewsModel())
+    var isLoading = MutableStateFlow(true)
 
     init {
         viewModelScope.launch {
             try {
-                val response = newsApi.getNews("tomcat", "all_news")
-                news.value.addAll(response)
+                val response = newsApi.getNews()
+                news.value = response
+                isLoading.value = false
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d("ViewModel", "Error: ${e.message}")
@@ -31,15 +33,8 @@ class ViewModel() : ViewModel() {
         }
     }
 
-    fun fetchRecent(): List<NewsModel> {
-        return news.value
-    }
-
-    fun fetchTopics(topic: String) {
-
-    }
-
-    fun filterTopics(topic: String) {
-
+    fun getCategory(category: String): NewsModel {
+        val filteredNews = news.value.articles.filter { it.category == category } as ArrayList
+        return NewsModel(filteredNews, true)
     }
 }

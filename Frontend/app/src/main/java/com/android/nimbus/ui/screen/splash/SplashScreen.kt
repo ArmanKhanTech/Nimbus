@@ -9,26 +9,31 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.android.nimbus.Screen
+import com.android.nimbus.viewmodel.ViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun SplashScreen(
     navController: NavController,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
+    val isLoading = viewModel.isLoading.collectAsState()
 
-    LaunchedEffect(key1 = null) {
-        scope.launch {
-            kotlinx.coroutines.delay(2000)
-            navController.navigate(Screen.HOME.name)
+    LaunchedEffect(isLoading.value) {
+        if (!isLoading.value) {
+            scope.launch {
+                kotlinx.coroutines.delay(2000)
+                navController.navigate("home")
+            }
         }
     }
 

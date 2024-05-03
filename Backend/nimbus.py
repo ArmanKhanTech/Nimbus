@@ -12,15 +12,15 @@ categories = [
     "education",
     "entertainment",
     "fashion",
-    "health",
-    "international",
+    "Health___Fitness",
     "miscellaneous",
     "politics",
     "science",
     "sports",
-    "startups",
+    "startup",
     "technology",
     "travel",
+    "world"
 ]
 
 newsDictionary = {
@@ -47,7 +47,7 @@ def get_news():
             )
         else:
             set_news(requests.get(
-                f'https://inshorts.com/api/en/search/trending_topics/{category}&max_limit=10&include_card_data=true'),
+                f'https://inshorts.com/api/en/search/trending_topics/{category}&max_limit=10&include_card_data=true&type=NEWS_CATEGORY'),
                 category
             )
 
@@ -84,7 +84,7 @@ def set_news(response, category):
             newsObject = {
                 'id': uuid.uuid4().hex,
                 'title': title,
-                'category': category,
+                'category': 'health & fitness' if category == 'Health___Fitness' else category,
                 'imageUrl': imageUrl,
                 'url': url,
                 'content': content,

@@ -49,8 +49,8 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -65,12 +65,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.SubcomposeAsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
 import com.android.nimbus.data.topics
 import com.android.nimbus.data.topicsImages
-import com.android.nimbus.model.Data
+import com.android.nimbus.model.Article
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
 import com.android.nimbus.ui.components.Shimmer
 import com.android.nimbus.viewmodel.ViewModel
@@ -134,12 +133,12 @@ fun HomeScreen(
                     modifier
                 )
                 TitleButton(
-                    title = "Recent",
+                    title = "Trending",
                     onButtonClick = {
-                        // Handle recent stories
+                        // Handle Trending stories
                     }
                 )
-                Recent(
+                Trending(
                     viewModel,
                     modifier = modifier
                 )
@@ -294,7 +293,7 @@ fun FeatureRow(
                 },
                 imageDark = R.drawable.feed_icon_dark,
                 imageLight = R.drawable.feed_icon_light,
-                title = "Recent",
+                title = "Trending",
                 modifier = modifier
             )
             FeatureButton(
@@ -431,44 +430,42 @@ fun TopStories(
     viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-    val topStories = viewModel.news.collectAsState()
+    val topStories = viewModel.getCategory("top_stories")
 
-    if(topStories.value[0].data.isNotEmpty()){
-        Column(
-            modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TopStoriesMainHeadline(
-                data = topStories.value[1].data[0],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopStoriesSubHeadlines(
-                data = topStories.value[1].data[2],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopStoriesSubHeadlines(
-                data = topStories.value[1].data[3],
-                modifier = modifier
-            )
-            CustomDivider(modifier)
-            TopStoriesSubHeadlines(
-                data = topStories.value[1].data[4],
-                modifier = modifier
-            )
-        }
+    Column(
+        modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TopStoriesMainHeadline(
+            article = topStories.articles[0],
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopStoriesSubHeadlines(
+            article = topStories.articles[1],
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopStoriesSubHeadlines(
+            article = topStories.articles[2],
+            modifier = modifier
+        )
+        CustomDivider(modifier)
+        TopStoriesSubHeadlines(
+            article = topStories.articles[3],
+            modifier = modifier
+        )
     }
 }
 
 @Composable
 fun TopStoriesMainHeadline(
-    data: Data,
+    article: Article,
     modifier: Modifier
 ) {
     AsyncImage(
-        model = data.imageUrl,
+        model = article.imageUrl,
         contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
@@ -481,7 +478,7 @@ fun TopStoriesMainHeadline(
         error = painterResource(id = R.drawable.placeholder)
     )
     Text(
-        text = data.title ?: "",
+        text = article.title ?: "",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onBackground
     )
@@ -489,24 +486,24 @@ fun TopStoriesMainHeadline(
 
 @Composable
 fun TopStoriesSubHeadlines(
-    data: Data,
+    article: Article,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = data.title ?: "",
+            text = article.title ?: "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier
                 .weight(1f)
         )
         VerticalDivider(
-            modifier = modifier.width(20.dp)
+            modifier = modifier.width(10.dp)
         )
         AsyncImage(
-            model = data.imageUrl,
+            model = article.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -527,7 +524,7 @@ fun TopicsHeader(
     Column(
         modifier = modifier.padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
         Text(
             text = "Topics",
@@ -545,17 +542,15 @@ fun TopicsHeader(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Topics(
-    nimbusViewModel: ViewModel,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = { topics.size })
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
-//    val topics = nimbusViewModel.topics.collectAsState()
-//
-//    LaunchedEffect(selectedTabIndex) {
-//        nimbusViewModel.fetchTopics(topicsTitles[selectedTabIndex])
-//    }
+    LaunchedEffect(pagerState.currentPage) {
+        selectedTabIndex = pagerState.currentPage
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -575,7 +570,7 @@ fun Topics(
                         contentDescription = topics[index],
                         contentScale = ContentScale.Crop,
                         modifier = modifier
-                            .size(if (selectedTabIndex == index) 75.dp else 60.dp)
+                            .size(if (selectedTabIndex == index) 80.dp else 60.dp)
                             .clip(RoundedCornerShape(10.dp))
                             .animateContentSize()
                             .clickable {
@@ -621,7 +616,7 @@ fun Topics(
         ) {
             TopicsPage(
                 topic = topics[selectedTabIndex],
-                nimbusViewModel = nimbusViewModel,
+                viewModel = viewModel,
                 modifier = modifier
             )
         }
@@ -631,14 +626,10 @@ fun Topics(
 @Composable
 fun TopicsPage(
     topic: String,
-    nimbusViewModel: ViewModel,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-//    val selectedTopic = nimbusViewModel.selectedTopic.collectAsState()
-//
-//    LaunchedEffect(topic) {
-//        nimbusViewModel.getFilteredTopics(topic)
-//    }
+    val topics = viewModel.getCategory(topic.lowercase())
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -646,22 +637,22 @@ fun TopicsPage(
         modifier = modifier.padding(18.dp, 0.dp)
     ) {
         TopicsSubHeadlines(
-//            article = selectedTopic.value.articles[0],
+            article = topics.articles[0],
             modifier = modifier
         )
         CustomDivider(modifier)
         TopicsSubHeadlines(
-//            article = selectedTopic.value.articles[1],
+            article = topics.articles[1],
             modifier = modifier
         )
         CustomDivider(modifier)
         TopicsSubHeadlines(
-//            article = selectedTopic.value.articles[2],
+            article = topics.articles[2],
             modifier = modifier
         )
         CustomDivider(modifier)
         TopicsSubHeadlines(
-//            article = selectedTopic.value.articles[3],
+            article = topics.articles[3],
             modifier = modifier
         )
         Text(
@@ -679,13 +670,14 @@ fun TopicsPage(
 
 @Composable
 fun TopicsSubHeadlines(
+    article: Article,
     modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = null,
+            model = article.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -693,11 +685,14 @@ fun TopicsSubHeadlines(
                 .clip(RoundedCornerShape(10.dp))
                 .background(
                     Shimmer(true, 1000f)
-                )
+                ),
+            error = painterResource(id = R.drawable.placeholder)
         )
-        Spacer(modifier = modifier.weight(1f))
+        VerticalDivider(
+            modifier = modifier.width(10.dp)
+        )
         Text(
-            text = "Headline",
+            text = article.title ?: "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -705,45 +700,46 @@ fun TopicsSubHeadlines(
 }
 
 @Composable
-fun Recent(
-    nimbusViewModel: ViewModel,
+fun Trending(
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-//    val recent = nimbusViewModel.recent.collectAsState()
-//
-//    LaunchedEffect(Unit) {
-//        nimbusViewModel.fetchRecent()
-//    }
+    val trending = viewModel.getCategory("trending")
 
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RecentMainHeadline(
+        TrendingMainHeadline(
+            article = trending.articles[0],
             modifier = modifier
         )
         CustomDivider(modifier)
-        RecentSubHeadlines(
+        TrendingSubHeadlines(
+            article = trending.articles[1],
             modifier = modifier
         )
         CustomDivider(modifier)
-        RecentSubHeadlines(
+        TrendingSubHeadlines(
+            article = trending.articles[2],
             modifier = modifier
         )
         CustomDivider(modifier)
-        RecentSubHeadlines(
+        TrendingSubHeadlines(
+            article = trending.articles[3],
             modifier = modifier
         )
     }
 }
 
 @Composable
-fun RecentMainHeadline(
+fun TrendingMainHeadline(
+    article: Article,
     modifier: Modifier
 ) {
-    SubcomposeAsyncImage(
-        model = null,
+    AsyncImage(
+        model = article.imageUrl,
         contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
@@ -752,32 +748,36 @@ fun RecentMainHeadline(
             .clip(RoundedCornerShape(10.dp))
             .background(
                 Shimmer(true, 1000f)
-            )
+            ),
+        error = painterResource(id = R.drawable.placeholder)
     )
     Text(
-        text = "",
+        text = article.title ?:"",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onBackground
     )
 }
 
 @Composable
-fun RecentSubHeadlines(
+fun TrendingSubHeadlines(
+    article: Article,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "",
+            text = article.title ?: "",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = modifier
+                .weight(1f)
         )
         VerticalDivider(
-            modifier = modifier.width(20.dp)
+            modifier = modifier.width(10.dp)
         )
-        SubcomposeAsyncImage(
-            model = null,
+        AsyncImage(
+            model = article.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -785,7 +785,8 @@ fun RecentSubHeadlines(
                 .clip(RoundedCornerShape(10.dp))
                 .background(
                     Shimmer(true, 1000f)
-                )
+                ),
+            error = painterResource(id = R.drawable.placeholder)
         )
     }
 }

@@ -3,13 +3,13 @@ package com.android.nimbus.model
 import com.google.gson.annotations.SerializedName
 
 data class NewsModel(
-    @SerializedName("category") var category: String? = null,
-    @SerializedName("data") var data: ArrayList<Data> = arrayListOf(),
+    @SerializedName("articles") var articles: ArrayList<Article> = arrayListOf(),
     @SerializedName("success") var success: Boolean? = null
 )
 
-data class Data(
+data class Article(
     @SerializedName("author") var author: String? = null,
+    @SerializedName("category") var category: String? = null,
     @SerializedName("content") var content: String? = null,
     @SerializedName("date") var date: String? = null,
     @SerializedName("id") var id: String? = null,
