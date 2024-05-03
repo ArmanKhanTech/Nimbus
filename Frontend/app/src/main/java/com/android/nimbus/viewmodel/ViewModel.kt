@@ -1,6 +1,5 @@
 package com.android.nimbus.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.nimbus.api.NewsAPI
@@ -28,7 +27,6 @@ class ViewModel() : ViewModel() {
                 isLoading.value = false
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.d("ViewModel", "Error: ${e.message}")
             }
         }
     }

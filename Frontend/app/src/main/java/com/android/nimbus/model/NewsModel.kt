@@ -13,8 +13,8 @@ data class Article(
     @SerializedName("content") var content: String? = null,
     @SerializedName("date") var date: String? = null,
     @SerializedName("id") var id: String? = null,
-    @SerializedName("imageUrl") var imageUrl: String? = null,
-    @SerializedName("readMoreUrl") var readMoreUrl: String? = null,
+    @SerializedName("image_url") var image_url: String? = null,
+    @SerializedName("source_url") var source_url: String? = null,
     @SerializedName("time") var time: String? = null,
     @SerializedName("title") var title: String? = null,
     @SerializedName("url") var url: String? = null

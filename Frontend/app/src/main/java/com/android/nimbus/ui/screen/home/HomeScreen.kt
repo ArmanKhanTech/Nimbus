@@ -64,6 +64,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.Screen
@@ -186,7 +187,13 @@ fun Drawer(
                 scope.launch {
                     drawerState.close()
                 }
-                navController.navigate(Screen.SETTINGS.name)
+//                maintain state of this screen while navigating
+                navController.navigate(
+                    Screen.SETTINGS.name,
+                    navOptions = navOptions {
+                        popUpTo(Screen.HOME.name)
+                    }
+                )
             },
             icon = {
                 Icon(
@@ -465,7 +472,7 @@ fun TopStoriesMainHeadline(
     modifier: Modifier
 ) {
     AsyncImage(
-        model = article.imageUrl,
+        model = article.image_url,
         contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
@@ -503,7 +510,7 @@ fun TopStoriesSubHeadlines(
             modifier = modifier.width(10.dp)
         )
         AsyncImage(
-            model = article.imageUrl,
+            model = article.image_url,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -614,6 +621,7 @@ fun Topics(
         HorizontalPager(
             state = pagerState
         ) {
+//            tabs page duplicate for first and seocnd page
             TopicsPage(
                 topic = topics[selectedTabIndex],
                 viewModel = viewModel,
@@ -677,7 +685,7 @@ fun TopicsSubHeadlines(
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = article.imageUrl,
+            model = article.image_url,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -739,7 +747,7 @@ fun TrendingMainHeadline(
     modifier: Modifier
 ) {
     AsyncImage(
-        model = article.imageUrl,
+        model = article.image_url,
         contentDescription = "Headline Image",
         contentScale = ContentScale.Crop,
         modifier = modifier
@@ -777,7 +785,7 @@ fun TrendingSubHeadlines(
             modifier = modifier.width(10.dp)
         )
         AsyncImage(
-            model = article.imageUrl,
+            model = article.image_url,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from nimbus import get_news
 from flask_cors import CORS
+import asyncio
 
 app = Flask(__name__)
 CORS(app)
@@ -13,8 +14,11 @@ def home():
 
 @app.route('/news')
 def news():
-  if request.method == 'GET':
-    return jsonify(get_news()), 200
+    if request.method == 'GET':
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(get_news())
+        return jsonify(result), 200
 
 
 if __name__ == '__main__':
