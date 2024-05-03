@@ -10,7 +10,7 @@ CORS(app)
 @app.route('/')
 def home():
     return jsonify({
-        "message": "Nimbus API."
+        "message": "Nimbus News API."
     }), 200
 
 @app.route('/news')
