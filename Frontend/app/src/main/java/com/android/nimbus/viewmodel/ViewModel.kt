@@ -19,6 +19,9 @@ class ViewModel() : ViewModel() {
     private var news = MutableStateFlow(NewsModel())
     var isLoading = MutableStateFlow(true)
 
+    var feedsTitle = "All News"
+    var currentArticleInFeed: String? = null
+
     init {
         viewModelScope.launch {
             try {
@@ -31,7 +34,12 @@ class ViewModel() : ViewModel() {
         }
     }
 
-    fun getCategory(category: String): NewsModel {
+    fun getArticleByID(id: String): NewsModel {
+        val filteredNews = news.value.articles.filter { it.id == id } as ArrayList
+        return NewsModel(filteredNews, true)
+    }
+
+    fun getArticlesByCategory(category: String): NewsModel {
         val filteredNews = news.value.articles.filter { it.category == category } as ArrayList
         return NewsModel(filteredNews, true)
     }

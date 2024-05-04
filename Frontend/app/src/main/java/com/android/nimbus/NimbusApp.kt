@@ -55,7 +55,7 @@ fun NimbusApp(
             HomeScreen(navController, isDarkMode, viewModel, modifier)
         }
         composable(NavigationItem.Feed.route) {
-            FeedScreen(navController, isDarkMode, "Feed", modifier)
+            FeedScreen(navController, isDarkMode, viewModel, modifier)
         }
         composable(NavigationItem.Web.route) {
             WebScreen(navController)

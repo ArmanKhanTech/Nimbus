@@ -3,7 +3,6 @@ package com.android.nimbus.ui.screen.feeds
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -36,21 +34,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.android.nimbus.R
-import com.android.nimbus.ui.components.Shimmer
+import com.android.nimbus.model.Article
+import com.android.nimbus.model.NewsModel
 import com.android.nimbus.ui.components.TopAppBar
+import com.android.nimbus.viewmodel.ViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeedScreen(
     navController: NavController,
     isDarkMode: MutableState<Boolean>?,
-    title: String,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
+    val articles = viewModel.getArticlesByCategory(
+        when (viewModel.feedsTitle) {
+            "All News" -> "all_news"
+            "Top Stories" -> "top_stories"
+            else -> viewModel.feedsTitle.lowercase()
+        }
+    )
+
+    var currentArticle: NewsModel? = null
+    LaunchedEffect(Unit) {
+        if(viewModel.currentArticleInFeed != null) {
+            currentArticle = viewModel.getArticleByID(viewModel.currentArticleInFeed!!)
+        }
+    }
+
     var pageCount by remember {
         mutableIntStateOf(5)
     }
@@ -64,7 +80,7 @@ fun FeedScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = title,
+                title = viewModel.feedsTitle,
                 onBackPressed = {
                     navController.popBackStack()
                 }
@@ -78,7 +94,11 @@ fun FeedScreen(
             state = pagerState,
             beyondBoundsPageCount = 5,
         ) {
-            DisplayNews(pagerState, isDarkMode, modifier)
+            if (currentArticle != null) {
+                DisplayNews(currentArticle!!.articles[it], viewModel, isDarkMode, modifier)
+            } else {
+                DisplayNews(articles.articles[it], viewModel, isDarkMode, modifier)
+            }
         }
         LaunchedEffect(pagerState.currentPage) {
             val currentPage = pagerState.currentPage
@@ -89,10 +109,10 @@ fun FeedScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DisplayNews(
-    pagerState: PagerState,
+    article: Article,
+    viewModel: ViewModel,
     isDarkMode: MutableState<Boolean>?,
     modifier: Modifier = Modifier
 ) {
@@ -105,39 +125,38 @@ fun DisplayNews(
             .height(screenHeight)
     ) {
         AsyncImage(
-            model = null,
+            model = article.image_url,
             contentDescription = "News Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .fillMaxWidth()
-                .height(screenHeight / 3f)
-                .background(
-                    Shimmer(true, 1000f)
-                )
+                .height(screenHeight / 3f),
+            error = painterResource(id = R.drawable.placeholder)
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "Headline",
+            text = article.title ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier.padding(horizontal = 16.dp),
-            maxLines = 3
+            modifier = modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Summary",
+            text = article.content ?: "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier.padding(horizontal = 16.dp),
-            maxLines = 3
+            overflow = TextOverflow.Ellipsis,
+            modifier = modifier
+                .padding(horizontal = 16.dp)
+                .weight(4f)
         )
         Spacer(modifier = modifier.height(10.dp))
         Text(
-            text = "Author",
+            text = (" - " + article.author),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier.padding(horizontal = 16.dp),
-            maxLines = 3
+            maxLines = 1
         )
         Spacer(modifier = modifier.weight(1f))
         Row(

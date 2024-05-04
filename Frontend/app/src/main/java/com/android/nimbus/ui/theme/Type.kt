@@ -57,12 +57,14 @@ val Typography = Typography(
     bodyMedium = defaultTypography.bodyMedium.copy(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
-        fontSize = 20.sp
+        fontSize = 18.sp,
+        lineHeight = 22.sp
     ),
     bodySmall = defaultTypography.bodySmall.copy(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
+        fontSize = 14.sp,
+        lineHeight = 18.sp
     ),
     headlineLarge = defaultTypography.headlineLarge.copy(
         fontFamily = Montserrat,
