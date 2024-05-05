@@ -12,14 +12,12 @@ import com.android.nimbus.ui.screen.feeds.FeedScreen
 import com.android.nimbus.ui.screen.home.HomeScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
-import com.android.nimbus.ui.screen.web.WebScreen
 import com.android.nimbus.viewmodel.ViewModel
 
 enum class Screen {
     SPLASH,
     HOME,
     FEED,
-    WEB,
     SETTINGS,
     LOGIN,
     SIGNUP
@@ -29,7 +27,6 @@ sealed class NavigationItem(val route: String) {
     data object Splash : NavigationItem(Screen.SPLASH.name)
     data object Home : NavigationItem(Screen.HOME.name)
     data object Feed : NavigationItem(Screen.FEED.name)
-    data object Web : NavigationItem(Screen.WEB.name)
     data object Settings : NavigationItem(Screen.SETTINGS.name)
     data object Login : NavigationItem(Screen.LOGIN.name)
     data object Signup : NavigationItem(Screen.SIGNUP.name)
@@ -52,13 +49,10 @@ fun NimbusApp(
             SplashScreen(navController, viewModel, modifier)
         }
         composable(NavigationItem.Home.route) {
-            HomeScreen(navController, isDarkMode, viewModel, modifier)
+            HomeScreen(navController, viewModel, isDarkMode, modifier)
         }
         composable(NavigationItem.Feed.route) {
-            FeedScreen(navController, isDarkMode, viewModel, modifier)
-        }
-        composable(NavigationItem.Web.route) {
-            WebScreen(navController)
+            FeedScreen(navController, viewModel, isDarkMode, modifier)
         }
         composable(NavigationItem.Settings.route) {
             SettingsScreen(navController, isDarkMode, modifier)

@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +33,9 @@ fun CenterAlignedTopAppBar(
         title = {
             Text(
                 text = "Nimbus",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 30.sp
+                ),
                 color = MaterialTheme.colorScheme.primary
             )
         },
@@ -41,7 +44,7 @@ fun CenterAlignedTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Menu,
                     contentDescription = "Menu",
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(30.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -51,7 +54,7 @@ fun CenterAlignedTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Search",
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(30.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -74,7 +77,7 @@ fun MediumTopAppBar(
         title = {
             Text(
                 title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
         },
@@ -85,7 +88,7 @@ fun MediumTopAppBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back Button",
-                    modifier = modifier.size(28.dp),
+                    modifier = modifier.size(30.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -108,7 +111,7 @@ fun TopAppBar(
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
         },
@@ -119,7 +122,7 @@ fun TopAppBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back Button",
-                    modifier = modifier.size(28.dp),
+                    modifier = modifier.size(30.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }

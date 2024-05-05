@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.android.nimbus.ui.components.MediumTopAppBar
 import com.android.nimbus.utility.SharedPreferenceUtility
@@ -43,9 +44,10 @@ fun SettingsScreen(
                 headlineContent = {
                     Text(
                         "Dark Mode",
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
                         color = MaterialTheme.colorScheme.onBackground
-
                     )
                 },
                 supportingContent = {

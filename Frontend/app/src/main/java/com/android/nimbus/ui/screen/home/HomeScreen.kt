@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -61,6 +62,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -71,6 +73,7 @@ import com.android.nimbus.data.topics
 import com.android.nimbus.data.topicsImages
 import com.android.nimbus.model.Article
 import com.android.nimbus.ui.components.CenterAlignedTopAppBar
+import com.android.nimbus.ui.components.Shimmer
 import com.android.nimbus.viewmodel.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -79,8 +82,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     navController: NavController,
-    isDarkMode: MutableState<Boolean>?,
     viewModel: ViewModel,
+    isDarkMode: MutableState<Boolean>?,
     modifier: Modifier = Modifier
 ) {
     val scope = CoroutineScope(context = rememberCoroutineScope().coroutineContext)
@@ -91,7 +94,7 @@ fun HomeScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Drawer(navController, scope, drawerState, modifier)
+            Drawer(navController, drawerState, scope, modifier)
         },
     ) {
         Scaffold(
@@ -112,9 +115,9 @@ fun HomeScreen(
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
             ) {
-                Header(sheetState, scope, modifier)
+                Header(sheetState, scope, viewModel, modifier)
                 if (isDarkMode != null) {
-                    FeatureRow(isDarkMode, navController, viewModel, modifier)
+                    FeatureRow(navController, viewModel, isDarkMode, modifier)
                 }
                 TitleButton(
                     title = "Top Stories",
@@ -126,19 +129,11 @@ fun HomeScreen(
                                 popUpTo(Screen.HOME.name)
                             }
                         )
-                    }
+                    }, modifier
                 )
-                TopStories(
-                    viewModel,
-                    navController,
-                    modifier
-                )
+                TopStories(navController, viewModel, modifier)
                 TopicsHeader(modifier)
-                Topics(
-                    viewModel,
-                    navController,
-                    modifier
-                )
+                Topics(navController, viewModel, modifier)
                 TitleButton(
                     title = "Trending",
                     onButtonClick = {
@@ -149,13 +144,9 @@ fun HomeScreen(
                                 popUpTo(Screen.HOME.name)
                             }
                         )
-                    }
+                    }, modifier
                 )
-                Trending(
-                    viewModel,
-                    navController,
-                    modifier
-                )
+                Trending(navController, viewModel, modifier)
             }
 
             if (sheetState.isVisible) {
@@ -168,8 +159,8 @@ fun HomeScreen(
 @Composable
 fun Drawer(
     navController: NavController,
-    scope: CoroutineScope,
     drawerState: DrawerState,
+    scope: CoroutineScope,
     modifier: Modifier = Modifier
 ) {
     ModalDrawerSheet(
@@ -247,6 +238,7 @@ fun Drawer(
 fun Header(
     sheetState: SheetState,
     scope: CoroutineScope,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -259,12 +251,14 @@ fun Header(
         ) {
             Text(
                 text = "Your Briefing",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = "Tuesday, 20 July",
-                style = MaterialTheme.typography.bodySmall,
+                text = viewModel.getCurrentDate(),
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -288,7 +282,9 @@ fun Header(
         ) {
             Text(
                 text = "38\u2103",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
                 color = MaterialTheme.colorScheme.primary
             )
         }
@@ -297,9 +293,9 @@ fun Header(
 
 @Composable
 fun FeatureRow(
-    isDarkMode: MutableState<Boolean>,
     navController: NavController,
     viewModel: ViewModel,
+    isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -340,21 +336,6 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.feedsTitle = "Recent"
-                    navController.navigate(
-                        Screen.FEED.name,
-                        navOptions = navOptions {
-                            popUpTo(Screen.HOME.name)
-                        }
-                    )
-                },
-                imageDark = R.drawable.stories_icon_dark,
-                imageLight = R.drawable.stories_icon_light,
-                title = "Recent"
-            )
-            FeatureButton(
-                isDarkMode = isDarkMode,
-                onButtonClick = {
                     viewModel.feedsTitle = "Trending"
                     navController.navigate(
                         Screen.FEED.name,
@@ -388,11 +369,11 @@ fun FeatureRow(
 
 @Composable
 fun FeatureButton(
-    isDarkMode: MutableState<Boolean>,
     onButtonClick: () -> Unit,
     imageDark: Int,
     imageLight: Int,
     title: String,
+    isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
@@ -423,7 +404,7 @@ fun FeatureButton(
             )
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = modifier.padding(0.dp, 10.dp)
             )
@@ -456,7 +437,9 @@ fun TitleButton(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = modifier.padding(
                     start = 18.dp,
@@ -479,8 +462,8 @@ fun TitleButton(
 
 @Composable
 fun TopStories(
-    viewModel: ViewModel,
     navController: NavController,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
     val topStories = viewModel.getArticlesByCategory("top_stories")
@@ -523,8 +506,8 @@ fun TopStories(
 @Composable
 fun TopStoriesMainHeadline(
     article: Article,
-    viewModel: ViewModel,
     navController: NavController,
+    viewModel: ViewModel,
     modifier: Modifier
 ) {
     Column(
@@ -541,14 +524,14 @@ fun TopStoriesMainHeadline(
         }
     ) {
         AsyncImage(
-            model = article.image_url,
+            model = article.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            error = painterResource(id = R.drawable.placeholder)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Shimmer(true, 1000f))
         )
         Spacer(modifier = modifier.height(10.dp))
         Text(
@@ -562,8 +545,8 @@ fun TopStoriesMainHeadline(
 @Composable
 fun TopStoriesSubHeadlines(
     article: Article,
-    viewModel: ViewModel,
     navController: NavController,
+    viewModel: ViewModel,
     modifier: Modifier
 ) {
     Row(
@@ -590,13 +573,13 @@ fun TopStoriesSubHeadlines(
             modifier = modifier.width(10.dp)
         )
         AsyncImage(
-            model = article.image_url,
+            model = article.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            error = painterResource(id = R.drawable.placeholder)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Shimmer(true, 1000f))
         )
     }
 }
@@ -612,7 +595,9 @@ fun TopicsHeader(
     ) {
         Text(
             text = "Topics",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontWeight = FontWeight.Bold
+            ),
             color = MaterialTheme.colorScheme.onBackground
         )
         HorizontalDivider(
@@ -626,11 +611,12 @@ fun TopicsHeader(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Topics(
-    viewModel: ViewModel,
     navController: NavController,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = { topics.size })
+
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(pagerState.currentPage) {
@@ -756,7 +742,7 @@ fun TopicsPage(
         )
         Text(
             text = "View More",
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = modifier
                 .padding(0.dp, 20.dp)
@@ -776,8 +762,8 @@ fun TopicsPage(
 @Composable
 fun TopicsSubHeadlines(
     article: Article,
-    viewModel: ViewModel,
     navController: NavController,
+    viewModel: ViewModel,
     topic: String,
     modifier: Modifier = Modifier
 ) {
@@ -796,13 +782,13 @@ fun TopicsSubHeadlines(
         }
     ) {
         AsyncImage(
-            model = article.image_url,
+            model = article.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            error = painterResource(id = R.drawable.placeholder)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Shimmer(true, 1000f))
         )
         VerticalDivider(
             modifier = modifier.width(10.dp)
@@ -818,8 +804,8 @@ fun TopicsSubHeadlines(
 
 @Composable
 fun Trending(
-    viewModel: ViewModel,
     navController: NavController,
+    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
     val trending = viewModel.getArticlesByCategory("trending")
@@ -862,9 +848,9 @@ fun Trending(
 @Composable
 fun TrendingMainHeadline(
     article: Article,
-    viewModel: ViewModel,
     navController: NavController,
-    modifier: Modifier
+    viewModel: ViewModel,
+    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -880,14 +866,14 @@ fun TrendingMainHeadline(
         }
     ) {
         AsyncImage(
-            model = article.image_url,
+            model = article.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            error = painterResource(id = R.drawable.placeholder)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Shimmer(true, 1000f))
         )
         Spacer(modifier = modifier.height(10.dp))
         Text(
@@ -901,9 +887,9 @@ fun TrendingMainHeadline(
 @Composable
 fun TrendingSubHeadlines(
     article: Article,
-    viewModel: ViewModel,
     navController: NavController,
-    modifier: Modifier
+    viewModel: ViewModel,
+    modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -929,13 +915,13 @@ fun TrendingSubHeadlines(
             modifier = modifier.width(10.dp)
         )
         AsyncImage(
-            model = article.image_url,
+            model = article.imageUrl,
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(75.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            error = painterResource(id = R.drawable.placeholder)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Shimmer(true, 1000f))
         )
     }
 }

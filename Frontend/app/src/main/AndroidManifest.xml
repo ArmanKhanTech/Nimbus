@@ -11,10 +11,6 @@
         android:allowBackup="true"
         android:theme="@style/Theme.Nimbus">
 
-        <meta-data
-            android:name="NEWS_API_KEY"
-            android:value="${NEWS_API_KEY}" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true"

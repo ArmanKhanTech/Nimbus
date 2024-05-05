@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.android.nimbus.Screen
 import com.android.nimbus.viewmodel.ViewModel
 import kotlinx.coroutines.launch
 
@@ -31,8 +32,12 @@ fun SplashScreen(
     LaunchedEffect(isLoading.value) {
         if (!isLoading.value) {
             scope.launch {
-                kotlinx.coroutines.delay(2000)
-                navController.navigate("home")
+                navController.navigate(Screen.HOME.name) {
+                    popUpTo(Screen.SPLASH.name) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
             }
         }
     }

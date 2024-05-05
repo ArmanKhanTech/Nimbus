@@ -1,8 +1,12 @@
 package com.android.nimbus.ui.screen.feeds
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,63 +18,85 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.model.Article
 import com.android.nimbus.model.NewsModel
+import com.android.nimbus.ui.components.Shimmer
 import com.android.nimbus.ui.components.TopAppBar
 import com.android.nimbus.viewmodel.ViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeedScreen(
     navController: NavController,
-    isDarkMode: MutableState<Boolean>?,
     viewModel: ViewModel,
+    isDarkMode: MutableState<Boolean>?,
     modifier: Modifier = Modifier
 ) {
-    val articles = viewModel.getArticlesByCategory(
-        when (viewModel.feedsTitle) {
-            "All News" -> "all_news"
-            "Top Stories" -> "top_stories"
-            else -> viewModel.feedsTitle.lowercase()
-        }
-    )
+    val context = LocalContext.current
+
+    val feed by remember {
+        mutableStateOf( viewModel.getArticlesByCategory(
+            when (viewModel.feedsTitle) {
+                "All News" -> "all_news"
+                "Top Stories" -> "top_stories"
+                else -> viewModel.feedsTitle.lowercase()
+            }
+        ))
+    }
 
     var currentArticle: NewsModel? = null
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel.currentArticleInFeed) {
         if(viewModel.currentArticleInFeed != null) {
             currentArticle = viewModel.getArticleByID(viewModel.currentArticleInFeed!!)
+            feed.articles.add(0, currentArticle!!.articles[0])
+            feed.articles = feed.articles.distinct() as ArrayList<Article>
         }
     }
 
-    var pageCount by remember {
-        mutableIntStateOf(5)
+    DisposableEffect(viewModel.currentArticleInFeed, viewModel.feedsTitle) {
+        onDispose {
+            viewModel.currentArticleInFeed = null
+            viewModel.feedsTitle = "All News"
+        }
     }
 
+    var pageCount by rememberSaveable { mutableIntStateOf(5) }
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { pageCount }
@@ -92,32 +118,50 @@ fun FeedScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             state = pagerState,
-            beyondBoundsPageCount = 5,
+            beyondBoundsPageCount = 3,
         ) {
             if (currentArticle != null) {
-                DisplayNews(currentArticle!!.articles[it], viewModel, isDarkMode, modifier)
+                DisplayNews(
+                    currentArticle!!.articles[it],
+                    pagerState,
+                    viewModel,
+                    context,
+                    isDarkMode!!,
+                    modifier
+                )
             } else {
-                DisplayNews(articles.articles[it], viewModel, isDarkMode, modifier)
+                DisplayNews(
+                    feed.articles[it],
+                    pagerState,
+                    viewModel,
+                    context,
+                    isDarkMode!!,
+                    modifier
+                )
             }
         }
         LaunchedEffect(pagerState.currentPage) {
             val currentPage = pagerState.currentPage
-            if (currentPage % 5 == 0) {
-                pageCount += 5
+            if (currentPage % 3 == 0) {
+                pageCount += 3
             }
         }
     }
 }
 
+@SuppressLint("SetJavaScriptEnabled")
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DisplayNews(
     article: Article,
+    pagerState: PagerState,
     viewModel: ViewModel,
-    isDarkMode: MutableState<Boolean>?,
+    context: Context,
+    isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
-
+    val scope = rememberCoroutineScope()
     val screenHeight = configuration.screenHeightDp.dp
 
     Column(
@@ -125,18 +169,20 @@ fun DisplayNews(
             .height(screenHeight)
     ) {
         AsyncImage(
-            model = article.image_url,
+            model = article.imageUrl,
             contentDescription = "News Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .fillMaxWidth()
-                .height(screenHeight / 3f),
-            error = painterResource(id = R.drawable.placeholder)
+                .height(screenHeight / 3f)
+                .background(Shimmer(true, 1000f))
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = article.title ?: "",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier.padding(horizontal = 16.dp)
         )
@@ -148,7 +194,8 @@ fun DisplayNews(
             overflow = TextOverflow.Ellipsis,
             modifier = modifier
                 .padding(horizontal = 16.dp)
-                .weight(4f)
+                .verticalScroll(state = rememberScrollState())
+                .weight(5f)
         )
         Spacer(modifier = modifier.height(10.dp))
         Text(
@@ -173,7 +220,7 @@ fun DisplayNews(
                 darkIcon = R.drawable.bookmark_icon_dark,
                 lightIcon = R.drawable.bookmark_icon_light,
                 onButtonClick = {
-
+                    // Add bookmark functionality here
                 },
                 isDarkMode = isDarkMode
             )
@@ -185,7 +232,13 @@ fun DisplayNews(
                 darkIcon = R.drawable.share_icon_dark,
                 lightIcon = R.drawable.share_icon_light,
                 onButtonClick = {
-
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, article.sourceUrl)
+                        type = "text/plain"
+                    }
+                    val shareIntent = Intent.createChooser(sendIntent, null)
+                    startActivity(context, shareIntent, null)
                 },
                 isDarkMode = isDarkMode
             )
@@ -197,7 +250,9 @@ fun DisplayNews(
                 darkIcon = R.drawable.top_icon_dark,
                 lightIcon = R.drawable.top_icon_light,
                 onButtonClick = {
-
+                    scope.launch {
+                        pagerState.animateScrollToPage(0)
+                    }
                 },
                 isDarkMode = isDarkMode
             )
@@ -209,7 +264,11 @@ fun DisplayNews(
                 darkIcon = R.drawable.web_icon_dark,
                 lightIcon = R.drawable.web_icon_light,
                 onButtonClick = {
-
+                    val browserIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        android.net.Uri.parse(article.sourceUrl)
+                    )
+                    startActivity(context, browserIntent, null)
                 },
                 isDarkMode = isDarkMode
             )
@@ -225,7 +284,7 @@ fun ActionButton(
     onButtonClick: () -> Unit,
     darkIcon: Int,
     lightIcon: Int,
-    isDarkMode: MutableState<Boolean>?,
+    isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
@@ -244,16 +303,14 @@ fun ActionButton(
         shape = CircleShape,
         modifier = modifier.size(40.dp)
     ) {
-        if (isDarkMode != null) {
-            Image(
-                if (isDarkMode.value) painterResource(darkIcon)
-                else painterResource(lightIcon),
-                contentDescription = title,
-                contentScale = ContentScale.FillHeight,
-                modifier = modifier
-                    .size(size.dp)
-                    .padding(padding)
-            )
-        }
+        Image(
+            if (isDarkMode.value) painterResource(darkIcon)
+            else painterResource(lightIcon),
+            contentDescription = title,
+            contentScale = ContentScale.FillHeight,
+            modifier = modifier
+                .size(size.dp)
+                .padding(padding)
+        )
     }
 }
