@@ -1,5 +1,7 @@
 package com.android.nimbus.ui.screen.splash
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,38 +10,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.android.nimbus.Screen
-import com.android.nimbus.viewmodel.ViewModel
-import kotlinx.coroutines.launch
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SplashScreen(
     navController: NavController,
-    viewModel: ViewModel,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-    val isLoading = viewModel.isLoading.collectAsState()
+    val viewModel = SplashViewModel()
 
-    LaunchedEffect(isLoading.value) {
-        if (!isLoading.value) {
-            scope.launch {
-                navController.navigate(Screen.HOME.name) {
-                    popUpTo(Screen.SPLASH.name) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            }
-        }
+    val isLoading = viewModel.isLoading.collectAsState()
+    if (!isLoading.value) {
+        Log.d("Splash", "SplashScreen: ${viewModel.response.value}")
+        val response = viewModel.response.value
+        navController.navigate("${Screen.HOME.name}/$response")
     }
 
     Surface(

@@ -82,11 +82,12 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.1-alpha")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.5.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.android.gms:play-services-auth:21.1.1")
+//    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+//    implementation("com.google.firebase:firebase-auth")
+//    implementation("com.google.android.gms:play-services-auth:21.1.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

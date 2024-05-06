@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CenterAlignedTopAppBar(
+fun HomeAppBar(
     onMenuIconTap: () -> Unit = {},
     onSearchIconTap: () -> Unit = {},
 ) {
@@ -64,7 +64,7 @@ fun CenterAlignedTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MediumTopAppBar(
+fun SettingsAppBar(
     title: String,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -98,7 +98,7 @@ fun MediumTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(
+fun FeedsAppBar(
     title: String,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier

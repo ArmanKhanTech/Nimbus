@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class NewsModel(
     @SerializedName("articles") var articles: ArrayList<Article> = arrayListOf(),
     @SerializedName("success") var success: Boolean? = null
-)
+) : java.io.Serializable
 
 data class Article(
     @SerializedName("author") var author: String? = null,

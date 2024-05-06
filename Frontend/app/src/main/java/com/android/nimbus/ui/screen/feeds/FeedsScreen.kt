@@ -30,7 +30,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -55,44 +54,44 @@ import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.model.Article
 import com.android.nimbus.model.NewsModel
+import com.android.nimbus.ui.components.FeedsAppBar
 import com.android.nimbus.ui.components.Shimmer
-import com.android.nimbus.ui.components.TopAppBar
-import com.android.nimbus.viewmodel.ViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeedScreen(
     navController: NavController,
-    viewModel: ViewModel,
+    newsModel: NewsModel,
+    category: String,
+    articleID: String?,
     isDarkMode: MutableState<Boolean>?,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
+    val viewModel = FeedsViewModel(
+        newsModel = newsModel,
+        category = category,
+        articleID = articleID,
+    )
+
     val feed by remember {
         mutableStateOf( viewModel.getArticlesByCategory(
-            when (viewModel.feedsTitle) {
+            when (viewModel.category) {
                 "All News" -> "all_news"
                 "Top Stories" -> "top_stories"
-                else -> viewModel.feedsTitle.lowercase()
+                else -> viewModel.category.lowercase()
             }
         ))
     }
 
     var currentArticle: NewsModel? = null
-    LaunchedEffect(viewModel.currentArticleInFeed) {
-        if(viewModel.currentArticleInFeed != null) {
-            currentArticle = viewModel.getArticleByID(viewModel.currentArticleInFeed!!)
+    LaunchedEffect(viewModel.articleID) {
+        if(viewModel.articleID != null) {
+            currentArticle = viewModel.getArticleByID(viewModel.articleID)
             feed.articles.add(0, currentArticle!!.articles[0])
             feed.articles = feed.articles.distinct() as ArrayList<Article>
-        }
-    }
-
-    DisposableEffect(viewModel.currentArticleInFeed, viewModel.feedsTitle) {
-        onDispose {
-            viewModel.currentArticleInFeed = null
-            viewModel.feedsTitle = "All News"
         }
     }
 
@@ -105,8 +104,8 @@ fun FeedScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = viewModel.feedsTitle,
+            FeedsAppBar(
+                title = viewModel.category,
                 onBackPressed = {
                     navController.popBackStack()
                 }
@@ -155,7 +154,7 @@ fun FeedScreen(
 fun DisplayNews(
     article: Article,
     pagerState: PagerState,
-    viewModel: ViewModel,
+    viewModel: FeedsViewModel,
     context: Context,
     isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
