@@ -1,4 +1,4 @@
-package com.android.nimbus.ui.screen.feeds
+package com.android.nimbus.ui.screen.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -34,8 +34,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -53,45 +51,30 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.model.Article
-import com.android.nimbus.model.NewsModel
 import com.android.nimbus.ui.components.FeedsAppBar
 import com.android.nimbus.ui.components.Shimmer
+import com.android.nimbus.ui.viewmodels.SharedViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeedScreen(
     navController: NavController,
-    newsModel: NewsModel,
-    category: String,
     articleID: String?,
-    isDarkMode: MutableState<Boolean>?,
+    category: String,
+    isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
-    val viewModel = FeedsViewModel(
-        newsModel = newsModel,
-        category = category,
-        articleID = articleID,
-    )
+    val feed = SharedViewModel.getArticlesByCategory(category)
 
-    val feed by remember {
-        mutableStateOf( viewModel.getArticlesByCategory(
-            when (viewModel.category) {
-                "All News" -> "all_news"
-                "Top Stories" -> "top_stories"
-                else -> viewModel.category.lowercase()
-            }
-        ))
-    }
-
-    var currentArticle: NewsModel? = null
-    LaunchedEffect(viewModel.articleID) {
-        if(viewModel.articleID != null) {
-            currentArticle = viewModel.getArticleByID(viewModel.articleID)
-            feed.articles.add(0, currentArticle!!.articles[0])
-            feed.articles = feed.articles.distinct() as ArrayList<Article>
+    var currentArticle = Article()
+    LaunchedEffect(Unit) {
+        if (articleID != null) {
+            currentArticle = SharedViewModel.getArticleByID(articleID)
+            feed.articles.add(0, currentArticle)
+            feed.articles = ArrayList(feed.articles.distinct())
         }
     }
 
@@ -105,7 +88,7 @@ fun FeedScreen(
         modifier = modifier,
         topBar = {
             FeedsAppBar(
-                title = viewModel.category,
+                title = category,
                 onBackPressed = {
                     navController.popBackStack()
                 }
@@ -119,25 +102,13 @@ fun FeedScreen(
             state = pagerState,
             beyondBoundsPageCount = 3,
         ) {
-            if (currentArticle != null) {
-                DisplayNews(
-                    currentArticle!!.articles[it],
-                    pagerState,
-                    viewModel,
-                    context,
-                    isDarkMode!!,
-                    modifier
-                )
-            } else {
-                DisplayNews(
-                    feed.articles[it],
-                    pagerState,
-                    viewModel,
-                    context,
-                    isDarkMode!!,
-                    modifier
-                )
-            }
+            DisplayNews(
+                currentArticle,
+                pagerState,
+                context,
+                isDarkMode,
+                modifier
+            )
         }
         LaunchedEffect(pagerState.currentPage) {
             val currentPage = pagerState.currentPage
@@ -154,7 +125,6 @@ fun FeedScreen(
 fun DisplayNews(
     article: Article,
     pagerState: PagerState,
-    viewModel: FeedsViewModel,
     context: Context,
     isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier

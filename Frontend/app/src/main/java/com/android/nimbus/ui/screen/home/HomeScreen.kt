@@ -74,6 +74,7 @@ import com.android.nimbus.data.topicsImages
 import com.android.nimbus.model.Article
 import com.android.nimbus.ui.components.HomeAppBar
 import com.android.nimbus.ui.components.Shimmer
+import com.android.nimbus.ui.viewmodels.SharedViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -81,12 +82,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     navController: NavController,
-    response: String,
-    isDarkMode: MutableState<Boolean>?,
+    isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
-    val viewModel = HomeViewModel(response)
-
     val scope = rememberCoroutineScope()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -116,26 +114,24 @@ fun HomeScreen(
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
             ) {
-                Header(sheetState, scope, viewModel, modifier)
-                if (isDarkMode != null) {
-                    FeatureRow(navController, viewModel, isDarkMode, modifier)
-                }
+                Header(sheetState, scope, modifier)
+                FeatureRow(navController, isDarkMode, modifier)
                 TitleButton(
                     title = "Top Stories",
                     onButtonClick = {
-                        viewModel.openFeeds(navController, "top_stories", null)
+                        openFeeds(navController, null, "top_stories")
                     }, modifier
                 )
-                TopStories(navController, viewModel, modifier)
+                TopStories(navController, modifier)
                 TopicsHeader(modifier)
-                Topics(navController, viewModel, modifier)
+                Topics(navController, modifier)
                 TitleButton(
                     title = "Trending",
                     onButtonClick = {
-                        viewModel.openFeeds(navController, "trending", null)
+                        openFeeds(navController, null, "trending")
                     }, modifier
                 )
-                Trending(navController, viewModel, modifier)
+                Trending(navController, modifier)
             }
 
             if (sheetState.isVisible) {
@@ -227,7 +223,6 @@ fun Drawer(
 fun Header(
     sheetState: SheetState,
     scope: CoroutineScope,
-    viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -246,7 +241,7 @@ fun Header(
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = viewModel.getCurrentDate(),
+                text = SharedViewModel.getCurrentDate(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -283,7 +278,6 @@ fun Header(
 @Composable
 fun FeatureRow(
     navController: NavController,
-    viewModel: HomeViewModel,
     isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
@@ -294,7 +288,7 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.openFeeds(navController, "all_news", null)
+                    openFeeds(navController, null, "all_news")
                 },
                 imageDark = R.drawable.feed_icon_dark,
                 imageLight = R.drawable.feed_icon_light,
@@ -304,7 +298,7 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.openFeeds(navController, "top_stories", null)
+                    openFeeds(navController, null, "top_stories")
                 },
                 imageDark = R.drawable.news_icon_dark,
                 imageLight = R.drawable.news_icon_light,
@@ -313,7 +307,7 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.openFeeds(navController, "trending", null)
+                    openFeeds(navController, null, "trending")
                 },
                 imageDark = R.drawable.trending_icon_dark,
                 imageLight = R.drawable.trending_icon_light,
@@ -322,7 +316,7 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.openFeeds(navController, "bookmarks", null)
+                    openFeeds(navController, null, "bookmarks")
                 },
                 imageDark = R.drawable.bookmark_icon_dark,
                 imageLight = R.drawable.bookmark_icon_light,
@@ -428,10 +422,9 @@ fun TitleButton(
 @Composable
 fun TopStories(
     navController: NavController,
-    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
-    val topStories = viewModel.getArticlesByCategory("top_stories")
+    val topStories = SharedViewModel.getArticlesByCategory("top_stories")
 
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
@@ -440,45 +433,30 @@ fun TopStories(
     ) {
         TopStoriesMainHeadline(
             article = topStories.articles[0],
-            viewModel = viewModel,
             navController = navController,
             modifier = modifier
         )
-        CustomDivider(modifier)
-        TopStoriesSubHeadlines(
-            article = topStories.articles[1],
-            viewModel = viewModel,
-            navController = navController,
-            modifier = modifier
-        )
-        CustomDivider(modifier)
-        TopStoriesSubHeadlines(
-            article = topStories.articles[2],
-            viewModel = viewModel,
-            navController = navController,
-            modifier = modifier
-        )
-        CustomDivider(modifier)
-        TopStoriesSubHeadlines(
-            article = topStories.articles[3],
-            viewModel = viewModel,
-            navController = navController,
-            modifier = modifier
-        )
+        for (i in 1 until 4) {
+            CustomDivider(modifier)
+            TopStoriesSubHeadlines(
+                article = topStories.articles[i],
+                navController = navController,
+                modifier = modifier
+            )
+        }
     }
 }
 
 @Composable
 fun TopStoriesMainHeadline(
-    article: Article,
     navController: NavController,
-    viewModel: HomeViewModel,
+    article: Article,
     modifier: Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.clickable {
-            viewModel.openFeeds(navController, "top_stories", article.id)
+            openFeeds(navController, article.id, "top_stories")
         }
     ) {
         AsyncImage(
@@ -502,16 +480,15 @@ fun TopStoriesMainHeadline(
 
 @Composable
 fun TopStoriesSubHeadlines(
-    article: Article,
     navController: NavController,
-    viewModel: HomeViewModel,
+    article: Article,
     modifier: Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
         modifier = modifier.clickable {
-            viewModel.openFeeds(navController, "top_stories", article.id)
+            openFeeds(navController, article.id, "top_stories")
         }
     ) {
         Text(
@@ -563,7 +540,6 @@ fun TopicsHeader(
 @Composable
 fun Topics(
     navController: NavController,
-    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = { topics.size })
@@ -632,13 +608,12 @@ fun Topics(
                 )
             }
         }
-        Spacer(modifier = modifier.height(20.dp))
+        Spacer(modifier = modifier.height(10.dp))
         HorizontalPager(
             state = pagerState
         ) {
             TopicsPage(
                 topic = topics[selectedTabIndex],
-                viewModel = viewModel,
                 navController = navController,
                 modifier = modifier
             )
@@ -648,49 +623,26 @@ fun Topics(
 
 @Composable
 fun TopicsPage(
-    topic: String,
-    viewModel: HomeViewModel,
     navController: NavController,
+    topic: String,
     modifier: Modifier = Modifier
 ) {
-    val topics = viewModel.getArticlesByCategory(topic.lowercase())
+    val topics = SharedViewModel.getArticlesByCategory(topic.lowercase())
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier.padding(18.dp, 0.dp)
     ) {
-        TopicsSubHeadlines(
-            article = topics.articles[0],
-            viewModel = viewModel,
-            navController = navController,
-            topic = topic,
-            modifier = modifier
-        )
-        CustomDivider(modifier)
-        TopicsSubHeadlines(
-            article = topics.articles[1],
-            viewModel = viewModel,
-            navController = navController,
-            topic = topic,
-            modifier = modifier
-        )
-        CustomDivider(modifier)
-        TopicsSubHeadlines(
-            article = topics.articles[2],
-            viewModel = viewModel,
-            navController = navController,
-            topic = topic,
-            modifier = modifier
-        )
-        CustomDivider(modifier)
-        TopicsSubHeadlines(
-            article = topics.articles[3],
-            viewModel = viewModel,
-            navController = navController,
-            topic = topic,
-            modifier = modifier
-        )
+        for (i in 0 until 4) {
+            TopicsSubHeadlines(
+                article = topics.articles[i],
+                navController = navController,
+                topic = topic,
+                modifier = modifier
+            )
+            CustomDivider(modifier)
+        }
         Text(
             text = "View More",
             style = MaterialTheme.typography.bodyMedium,
@@ -698,7 +650,7 @@ fun TopicsPage(
             modifier = modifier
                 .padding(0.dp, 20.dp)
                 .clickable {
-                    viewModel.openFeeds(navController, topic, null)
+                    openFeeds(navController, null, topic)
                 }
         )
     }
@@ -706,9 +658,8 @@ fun TopicsPage(
 
 @Composable
 fun TopicsSubHeadlines(
-    article: Article,
     navController: NavController,
-    viewModel: HomeViewModel,
+    article: Article,
     topic: String,
     modifier: Modifier = Modifier
 ) {
@@ -716,7 +667,7 @@ fun TopicsSubHeadlines(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
         modifier = modifier.clickable {
-            viewModel.openFeeds(navController, topic, article.id)
+            openFeeds(navController, article.id, topic)
         }
     ) {
         AsyncImage(
@@ -743,10 +694,9 @@ fun TopicsSubHeadlines(
 @Composable
 fun Trending(
     navController: NavController,
-    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
-    val trending = viewModel.getArticlesByCategory("trending")
+    val trending = SharedViewModel.getArticlesByCategory("trending")
 
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
@@ -755,45 +705,30 @@ fun Trending(
     ) {
         TrendingMainHeadline(
             article = trending.articles[0],
-            viewModel = viewModel,
             navController = navController,
             modifier = modifier
         )
-        CustomDivider(modifier)
-        TrendingSubHeadlines(
-            article = trending.articles[1],
-            viewModel = viewModel,
-            navController = navController,
-            modifier = modifier
-        )
-        CustomDivider(modifier)
-        TrendingSubHeadlines(
-            article = trending.articles[2],
-            viewModel = viewModel,
-            navController = navController,
-            modifier = modifier
-        )
-        CustomDivider(modifier)
-        TrendingSubHeadlines(
-            article = trending.articles[3],
-            viewModel = viewModel,
-            navController = navController,
-            modifier = modifier
-        )
+        for (i in 1 until 4) {
+            CustomDivider(modifier)
+            TrendingSubHeadlines(
+                article = trending.articles[i],
+                navController = navController,
+                modifier = modifier
+            )
+        }
     }
 }
 
 @Composable
 fun TrendingMainHeadline(
-    article: Article,
     navController: NavController,
-    viewModel: HomeViewModel,
+    article: Article,
     modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.clickable {
-            viewModel.openFeeds(navController, "trending", article.id)
+            openFeeds(navController, article.id, "trending")
         }
     ) {
         AsyncImage(
@@ -817,16 +752,15 @@ fun TrendingMainHeadline(
 
 @Composable
 fun TrendingSubHeadlines(
-    article: Article,
     navController: NavController,
-    viewModel: HomeViewModel,
+    article: Article,
     modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
         modifier = modifier.clickable {
-            viewModel.openFeeds(navController, "trending", article.id)
+            openFeeds(navController, article.id, "trending")
         }
     ) {
         Text(
@@ -908,8 +842,14 @@ fun BottomSheet(
     }
 }
 
+fun openFeeds(navController: NavController, articleID: String?, category: String) {
+    navController.navigate(
+        Screen.FEED.name + "/$articleID&$category"
+    )
+}
+
 //@Composable
-//fun TempCard(
+//fun WeatherCard(
 //    modifier: Modifier = Modifier
 //) {
 //    Column {
