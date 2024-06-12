@@ -13,7 +13,7 @@ key = os.getenv('API_KEY')
 @app.route('/')
 def home():
     return jsonify({
-        "message": "Nimbus News API."
+        "message": "Welcome to Nimbus."
     }), 200
 
 @app.route('/news')
