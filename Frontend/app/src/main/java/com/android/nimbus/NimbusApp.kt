@@ -14,6 +14,8 @@ import com.android.nimbus.ui.screen.feed.FeedScreen
 import com.android.nimbus.ui.screen.home.HomeScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
+import com.android.nimbus.utility.scaleInTransition
+import com.android.nimbus.utility.scaleOutTransition
 
 enum class Screen {
     SPLASH,
@@ -43,7 +45,19 @@ fun NimbusApp(
     NavHost(
         modifier = Modifier,
         navController = navController,
-        startDestination = NavigationItem.Splash.route
+        startDestination = NavigationItem.Splash.route,
+        enterTransition = {
+            scaleInTransition()
+        },
+        exitTransition = {
+            scaleOutTransition()
+        },
+        popEnterTransition = {
+            scaleInTransition()
+        },
+        popExitTransition = {
+            scaleOutTransition()
+        }
     ) {
         composable(NavigationItem.Splash.route) {
             SplashScreen(navController, modifier)
@@ -61,6 +75,15 @@ fun NimbusApp(
             val articleID = it.arguments?.getString("articleID")
             val category = it.arguments?.getString("category")
             FeedScreen(navController, articleID, category!!, isDarkMode, modifier)
+        }
+        composable(
+            "${NavigationItem.Feed.route}/{category}",
+            arguments = listOf(
+                navArgument("category") { type = NavType.StringType }
+            )
+        ) {
+            val category = it.arguments?.getString("category")
+            FeedScreen(navController, null, category!!, isDarkMode, modifier)
         }
         composable(NavigationItem.Settings.route) {
             SettingsScreen(navController, isDarkMode, modifier)

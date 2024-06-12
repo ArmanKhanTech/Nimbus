@@ -34,6 +34,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -53,9 +55,11 @@ import com.android.nimbus.R
 import com.android.nimbus.model.Article
 import com.android.nimbus.ui.components.FeedsAppBar
 import com.android.nimbus.ui.components.Shimmer
-import com.android.nimbus.ui.viewmodels.SharedViewModel
+import com.android.nimbus.ui.viewmodel.SharedViewModel
 import kotlinx.coroutines.launch
+import java.util.Locale
 
+@SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeedScreen(
@@ -67,18 +71,22 @@ fun FeedScreen(
 ) {
     val context = LocalContext.current
 
-    val feed = SharedViewModel.getArticlesByCategory(category)
+    var feed by remember {
+        mutableStateOf(
+            SharedViewModel.getArticlesByCategory(category)
+        )
+    }
 
-    var currentArticle = Article()
+    var currentArticle: Article
     LaunchedEffect(Unit) {
         if (articleID != null) {
             currentArticle = SharedViewModel.getArticleByID(articleID)
-            feed.articles.add(0, currentArticle)
-            feed.articles = ArrayList(feed.articles.distinct())
+            feed.add(0, currentArticle)
+            feed = feed.distinct() as ArrayList<Article>
         }
     }
 
-    var pageCount by rememberSaveable { mutableIntStateOf(5) }
+    var pageCount by rememberSaveable { mutableIntStateOf(3) }
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { pageCount }
@@ -88,7 +96,17 @@ fun FeedScreen(
         modifier = modifier,
         topBar = {
             FeedsAppBar(
-                title = category,
+                title = when (category) {
+                    "all_news" -> "All News"
+                    "top_stories" -> "Top Stories"
+                    "trending" -> "Trending"
+                    else -> category.replaceFirstChar {
+                        if (it.isLowerCase())
+                            it.titlecase(Locale.getDefault())
+                        else
+                            it.toString()
+                    }
+                },
                 onBackPressed = {
                     navController.popBackStack()
                 }
@@ -100,16 +118,17 @@ fun FeedScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             state = pagerState,
-            beyondBoundsPageCount = 3,
+            beyondBoundsPageCount = 3
         ) {
             DisplayNews(
-                currentArticle,
-                pagerState,
-                context,
-                isDarkMode,
-                modifier
+                article = feed[it],
+                pagerState = pagerState,
+                context = context,
+                isDarkMode = isDarkMode,
+                modifier = modifier
             )
         }
+
         LaunchedEffect(pagerState.currentPage) {
             val currentPage = pagerState.currentPage
             if (currentPage % 3 == 0) {
@@ -119,7 +138,6 @@ fun FeedScreen(
     }
 }
 
-@SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DisplayNews(
@@ -150,7 +168,7 @@ fun DisplayNews(
         Text(
             text = article.title ?: "",
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             ),
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier.padding(horizontal = 16.dp)
@@ -164,14 +182,14 @@ fun DisplayNews(
             modifier = modifier
                 .padding(horizontal = 16.dp)
                 .verticalScroll(state = rememberScrollState())
-                .weight(5f)
         )
         Spacer(modifier = modifier.height(10.dp))
         Text(
-            text = (" - " + article.author),
+            text = ("Author: " + article.author),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier.padding(horizontal = 16.dp),
+            modifier = modifier
+                .padding(16.dp),
             maxLines = 1
         )
         Spacer(modifier = modifier.weight(1f))

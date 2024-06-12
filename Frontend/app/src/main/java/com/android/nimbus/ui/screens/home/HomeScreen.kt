@@ -72,9 +72,11 @@ import com.android.nimbus.Screen
 import com.android.nimbus.data.topics
 import com.android.nimbus.data.topicsImages
 import com.android.nimbus.model.Article
+import com.android.nimbus.ui.components.AutoScrollingText
 import com.android.nimbus.ui.components.HomeAppBar
 import com.android.nimbus.ui.components.Shimmer
-import com.android.nimbus.ui.viewmodels.SharedViewModel
+import com.android.nimbus.ui.viewmodel.SharedViewModel
+import com.android.nimbus.utility.bounceClick
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -432,14 +434,14 @@ fun TopStories(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopStoriesMainHeadline(
-            article = topStories.articles[0],
+            article = topStories[0],
             navController = navController,
             modifier = modifier
         )
         for (i in 1 until 4) {
             CustomDivider(modifier)
             TopStoriesSubHeadlines(
-                article = topStories.articles[i],
+                article = topStories[i],
                 navController = navController,
                 modifier = modifier
             )
@@ -455,9 +457,10 @@ fun TopStoriesMainHeadline(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.clickable {
-            openFeeds(navController, article.id, "top_stories")
-        }
+        modifier = modifier
+            .bounceClick {
+                openFeeds(navController, article.id, "top_stories")
+            }
     ) {
         AsyncImage(
             model = article.imageUrl,
@@ -487,9 +490,10 @@ fun TopStoriesSubHeadlines(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
-        modifier = modifier.clickable {
-            openFeeds(navController, article.id, "top_stories")
-        }
+        modifier = modifier
+            .bounceClick {
+                openFeeds(navController, article.id, "top_stories")
+            }
     ) {
         Text(
             text = article.title ?: "",
@@ -555,56 +559,47 @@ fun Topics(
     ) {
         ScrollableTabRow(
             selectedTabIndex = selectedTabIndex,
-            indicator = {},
-            divider = {}
-        ) {
-            topicsImages.forEachIndexed { index, _ ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = modifier.weight(1f))
-                    Image(
-                        painter = painterResource(topicsImages[index]),
-                        contentDescription = topics[index],
-                        contentScale = ContentScale.Crop,
-                        modifier = modifier
-                            .size(if (selectedTabIndex == index) 80.dp else 60.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .animateContentSize()
-                            .clickable {
-                                selectedTabIndex = index
-                            }
-                            .border(
-                                BorderStroke(
-                                    width = if (selectedTabIndex == index) 2.dp else 0.5.dp,
-                                    color = MaterialTheme.colorScheme.primary
-                                ),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                    )
-                    Spacer(modifier = modifier.weight(1f))
-                }
-            }
-        }
-        ScrollableTabRow(
-            selectedTabIndex = selectedTabIndex,
-            divider = {},
         ) {
             topics.forEachIndexed { index, title ->
                 Tab(
                     text = {
-                        Text(
+                        AutoScrollingText(
                             text = title,
-                            style = if (selectedTabIndex == index) MaterialTheme.typography.bodyMedium
-                            else MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.onBackground
                         )
                     },
+                    icon = {
+                        Column {
+                            Image(
+                                painter = painterResource(topicsImages[index]),
+                                contentDescription = topics[index],
+                                contentScale = ContentScale.Crop,
+                                modifier = modifier
+                                    .size(75.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .animateContentSize()
+                                    .clickable {
+                                        selectedTabIndex = index
+                                    }
+                                    .border(
+                                        BorderStroke(
+                                            width = if (selectedTabIndex == index) 2.dp else 0.dp,
+                                            color = MaterialTheme.colorScheme.primary
+                                        ),
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                            )
+                            Spacer(modifier = modifier.height(10.dp))
+                        }
+                    },
                     selected = pagerState.currentPage == index,
                     onClick = {
                         selectedTabIndex = index
-                    }
+                    },
+                    modifier = modifier
+                        .width(125.dp)
                 )
             }
         }
@@ -636,12 +631,14 @@ fun TopicsPage(
     ) {
         for (i in 0 until 4) {
             TopicsSubHeadlines(
-                article = topics.articles[i],
+                article = topics[i],
                 navController = navController,
                 topic = topic,
                 modifier = modifier
             )
-            CustomDivider(modifier)
+            if (i != 3) {
+                CustomDivider(modifier)
+            }
         }
         Text(
             text = "View More",
@@ -650,7 +647,7 @@ fun TopicsPage(
             modifier = modifier
                 .padding(0.dp, 20.dp)
                 .clickable {
-                    openFeeds(navController, null, topic)
+                    openFeeds(navController, null, topic.lowercase())
                 }
         )
     }
@@ -666,9 +663,10 @@ fun TopicsSubHeadlines(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
-        modifier = modifier.clickable {
-            openFeeds(navController, article.id, topic)
-        }
+        modifier = modifier
+            .bounceClick {
+                openFeeds(navController, article.id, topic.lowercase())
+            }
     ) {
         AsyncImage(
             model = article.imageUrl,
@@ -704,14 +702,14 @@ fun Trending(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TrendingMainHeadline(
-            article = trending.articles[0],
+            article = trending[0],
             navController = navController,
             modifier = modifier
         )
         for (i in 1 until 4) {
             CustomDivider(modifier)
             TrendingSubHeadlines(
-                article = trending.articles[i],
+                article = trending[i],
                 navController = navController,
                 modifier = modifier
             )
@@ -727,9 +725,10 @@ fun TrendingMainHeadline(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.clickable {
-            openFeeds(navController, article.id, "trending")
-        }
+        modifier = modifier
+            .bounceClick {
+                openFeeds(navController, article.id, "trending")
+            }
     ) {
         AsyncImage(
             model = article.imageUrl,
@@ -759,9 +758,10 @@ fun TrendingSubHeadlines(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
-        modifier = modifier.clickable {
-            openFeeds(navController, article.id, "trending")
-        }
+        modifier = modifier
+            .bounceClick {
+                openFeeds(navController, article.id, "trending")
+            }
     ) {
         Text(
             text = article.title ?: "",
@@ -843,9 +843,15 @@ fun BottomSheet(
 }
 
 fun openFeeds(navController: NavController, articleID: String?, category: String) {
-    navController.navigate(
-        Screen.FEED.name + "/$articleID&$category"
-    )
+    if (articleID != null) {
+        navController.navigate(
+            Screen.FEED.name + "/$articleID&$category"
+        )
+    } else {
+        navController.navigate(
+            Screen.FEED.name + "/$category"
+        )
+    }
 }
 
 //@Composable

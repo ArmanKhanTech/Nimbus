@@ -17,7 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.android.nimbus.Screen
-import com.android.nimbus.ui.viewmodels.SharedViewModel
+import com.android.nimbus.ui.viewmodel.SharedViewModel
+import kotlinx.coroutines.delay
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -27,6 +28,7 @@ fun SplashScreen(
 ) {
     val news = SharedViewModel.news.collectAsState().value
     LaunchedEffect(news) {
+        delay(2000)
         if (news.articles.isNotEmpty()) {
             navController.navigate(Screen.HOME.name)
         }

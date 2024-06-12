@@ -1,4 +1,4 @@
-package com.android.nimbus.ui.viewmodels
+package com.android.nimbus.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -33,13 +33,13 @@ object SharedViewModel : ViewModel() {
         }
     }
 
-    fun getArticlesByCategory(category: String): NewsModel {
-        val filteredNews = news.value.articles.filter { it.category == category }
-        return NewsModel(ArrayList(filteredNews), true)
+    fun getArticlesByCategory(category: String): ArrayList<Article> {
+        val filteredArticle = news.value.articles.filter { it.category == category }
+        return filteredArticle as ArrayList
     }
 
     fun getArticleByID(id: String): Article {
-        return news.value.articles.find { it.id == id } ?: Article()
+        return news.value.articles.first { it.id == id }
     }
 
     fun getCurrentDate(): String {
