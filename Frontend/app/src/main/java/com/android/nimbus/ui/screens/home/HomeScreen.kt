@@ -206,7 +206,12 @@ fun Drawer(
             selected = false,
             onClick = {
                 // Handle log-out
-                navController.navigate(Screen.LOGIN.name)
+                navController.navigate(Screen.LOGIN.name) {
+                    launchSingleTop = true
+                    popUpTo(Screen.HOME.name) {
+                        inclusive = true
+                    }
+                }
             },
             icon = {
                 Icon(

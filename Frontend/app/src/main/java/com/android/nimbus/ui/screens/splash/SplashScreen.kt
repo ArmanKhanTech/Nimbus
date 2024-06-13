@@ -30,7 +30,12 @@ fun SplashScreen(
     LaunchedEffect(news) {
         delay(2000)
         if (news.articles.isNotEmpty()) {
-            navController.navigate(Screen.HOME.name)
+            navController.navigate(Screen.HOME.name) {
+                launchSingleTop = true
+                popUpTo(Screen.HOME.name) {
+                    inclusive = true
+                }
+            }
         }
     }
 

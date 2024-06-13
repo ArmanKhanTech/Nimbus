@@ -1,4 +1,4 @@
-package com.android.nimbus.ui.screen.auth.screen
+package com.android.nimbus.ui.screens.auth.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -14,8 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.AlternateEmail
-import androidx.compose.material.icons.sharp.Person
-import androidx.compose.material.icons.sharp.Phone
+import androidx.compose.material.icons.sharp.LockReset
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,16 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.android.nimbus.ui.components.BottomComponent
-import com.android.nimbus.ui.components.BottomSignupTextComponent
+import com.android.nimbus.ui.components.CustomButton
 import com.android.nimbus.ui.components.CustomTextField
 import com.android.nimbus.ui.components.FeedsAppBar
 import com.android.nimbus.ui.components.HeadingTextComponent
-import com.android.nimbus.ui.components.PasswordInputComponent
-import com.android.nimbus.ui.components.SignupTermsAndPrivacyText
+import com.android.nimbus.ui.components.TextInfoComponent
 
 @Composable
-fun SignupScreen(
+fun ForgotPasswordScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -45,7 +42,7 @@ fun SignupScreen(
             ),
         topBar = {
             FeedsAppBar(
-                title = "Signup",
+                title = "Password Reset",
                 onBackPressed = {
                     navController.popBackStack()
                 }
@@ -65,8 +62,19 @@ fun SignupScreen(
         ) {
             item {
                 Spacer(modifier = modifier.height(25.dp))
-                HeadingTextComponent(heading = "Welcome Back")
-                Spacer(modifier = modifier.height(20.dp))
+                Icon(
+                    imageVector = Icons.Sharp.LockReset,
+                    contentDescription = "Email Icon",
+                    modifier = modifier.size(250.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                HeadingTextComponent(heading = "Forgot Password")
+                Spacer(modifier = Modifier.height(20.dp))
+                TextInfoComponent(
+                    textVal = "Please enter the email address associated with your account."
+                )
+                Spacer(modifier = Modifier.height(20.dp))
                 CustomTextField(
                     labelVal = "Email ID",
                     icon = {
@@ -79,53 +87,13 @@ fun SignupScreen(
                     },
                     modifier
                 )
-                Spacer(modifier = modifier.height(20.dp))
-                PasswordInputComponent(
-                    labelVal = "Password",
-                    modifier
-                )
-                Spacer(modifier = modifier.height(20.dp))
-                CustomTextField(
-                    labelVal = "Full Name",
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Sharp.Person,
-                            contentDescription = "Name Icon",
-                            modifier = modifier.size(25.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                CustomButton(
+                    labelVal = "Submit",
+                    action = {
+                        // Handle submit action
                     },
-                    modifier
+                    navController
                 )
-                Spacer(modifier = modifier.height(20.dp))
-                CustomTextField(
-                    labelVal = "Mobile",
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Sharp.Phone,
-                            contentDescription = "Mobile Icon",
-                            modifier = modifier.size(25.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    modifier
-                )
-                Spacer(modifier = modifier.height(10.dp))
-                SignupTermsAndPrivacyText()
-                BottomComponent(
-                    "Signup",
-                    "Signup with Google",
-                    actionButtonAction = {
-
-                    },
-                    googleButtonAction = {
-
-                    },
-                    navController,
-                    modifier
-                )
-                Spacer(modifier = modifier.height(10.dp))
-                BottomSignupTextComponent(navController)
             }
         }
     }

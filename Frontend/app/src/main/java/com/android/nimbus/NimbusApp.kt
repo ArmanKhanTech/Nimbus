@@ -14,6 +14,7 @@ import com.android.nimbus.ui.screen.feed.FeedScreen
 import com.android.nimbus.ui.screen.home.HomeScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
+import com.android.nimbus.ui.screens.auth.screen.ForgotPasswordScreen
 import com.android.nimbus.utility.scaleInTransition
 import com.android.nimbus.utility.scaleOutTransition
 
@@ -23,7 +24,8 @@ enum class Screen {
     FEED,
     SETTINGS,
     LOGIN,
-    SIGNUP
+    SIGNUP,
+    FORGOT_PASSWORD
 }
 
 sealed class NavigationItem(val route: String) {
@@ -33,6 +35,7 @@ sealed class NavigationItem(val route: String) {
     data object Settings : NavigationItem(Screen.SETTINGS.name)
     data object Login : NavigationItem(Screen.LOGIN.name)
     data object Signup : NavigationItem(Screen.SIGNUP.name)
+    data object ForgotPassword : NavigationItem(Screen.FORGOT_PASSWORD.name)
 }
 
 @Composable
@@ -93,6 +96,9 @@ fun NimbusApp(
         }
         composable(NavigationItem.Signup.route) {
             SignupScreen(navController, modifier)
+        }
+        composable(NavigationItem.ForgotPassword.route) {
+            ForgotPasswordScreen(navController, modifier)
         }
     }
 }
