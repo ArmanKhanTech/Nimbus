@@ -16,27 +16,47 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.AlternateEmail
 import androidx.compose.material.icons.sharp.Person
 import androidx.compose.material.icons.sharp.Phone
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.android.nimbus.ui.components.BottomComponent
 import com.android.nimbus.ui.components.BottomSignupTextComponent
+import com.android.nimbus.ui.components.CustomButton
 import com.android.nimbus.ui.components.CustomTextField
 import com.android.nimbus.ui.components.FeedsAppBar
 import com.android.nimbus.ui.components.HeadingTextComponent
+import com.android.nimbus.ui.components.MessageType
 import com.android.nimbus.ui.components.PasswordInputComponent
 import com.android.nimbus.ui.components.SignupTermsAndPrivacyText
+import com.android.nimbus.ui.components.TopToast
 
 @Composable
 fun SignupScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val viewModel = AuthViewModel(navController)
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+
+    val loading by viewModel.loading.collectAsState()
+    val errorMsg by viewModel.errorMsg.collectAsState()
+
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -64,11 +84,20 @@ fun SignupScreen(
             contentPadding = PaddingValues(16.dp)
         ) {
             item {
+                if (errorMsg.isNotEmpty()) {
+                    TopToast(
+                        message = errorMsg,
+                        messageType = MessageType.ERROR,
+                        modifier = modifier
+                    )
+                }
                 Spacer(modifier = modifier.height(25.dp))
                 HeadingTextComponent(heading = "Welcome Back")
                 Spacer(modifier = modifier.height(20.dp))
                 CustomTextField(
                     labelVal = "Email ID",
+                    value = email,
+                    onValueChange = { email = it },
                     icon = {
                         Icon(
                             imageVector = Icons.Sharp.AlternateEmail,
@@ -82,11 +111,15 @@ fun SignupScreen(
                 Spacer(modifier = modifier.height(20.dp))
                 PasswordInputComponent(
                     labelVal = "Password",
+                    value = password,
+                    onValueChange = { password = it },
                     modifier
                 )
                 Spacer(modifier = modifier.height(20.dp))
                 CustomTextField(
                     labelVal = "Full Name",
+                    value = name,
+                    onValueChange = { name = it },
                     icon = {
                         Icon(
                             imageVector = Icons.Sharp.Person,
@@ -100,6 +133,8 @@ fun SignupScreen(
                 Spacer(modifier = modifier.height(20.dp))
                 CustomTextField(
                     labelVal = "Mobile",
+                    value = phone,
+                    onValueChange = { phone = it },
                     icon = {
                         Icon(
                             imageVector = Icons.Sharp.Phone,
@@ -112,19 +147,29 @@ fun SignupScreen(
                 )
                 Spacer(modifier = modifier.height(10.dp))
                 SignupTermsAndPrivacyText()
-                BottomComponent(
-                    "Signup",
-                    "Signup with Google",
-                    actionButtonAction = {
-
+                CustomButton(
+                    child = {
+                        if (loading) {
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = modifier.size(30.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Signup",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                            )
+                        }
                     },
-                    googleButtonAction = {
-
+                    action = {
+                        if (!loading) viewModel.signupWithEmail(email, password, name, phone)
                     },
-                    navController,
-                    modifier
+                    modifier = modifier
                 )
-                Spacer(modifier = modifier.height(10.dp))
+                Spacer(modifier = modifier.height(15.dp))
                 BottomSignupTextComponent(navController)
             }
         }

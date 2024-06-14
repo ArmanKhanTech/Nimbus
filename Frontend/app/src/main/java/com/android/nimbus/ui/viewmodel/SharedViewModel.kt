@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.nimbus.model.Article
 import com.android.nimbus.model.NewsModel
-import com.android.nimbus.repository.NimbusRepository
+import com.android.nimbus.repository.DataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -13,7 +13,7 @@ import java.util.Calendar
 import java.util.Locale
 
 object SharedViewModel : ViewModel() {
-    private val nimbusRepository: NimbusRepository = NimbusRepository()
+    private val dataRepository: DataRepository = DataRepository()
 
     val news = MutableStateFlow(NewsModel())
 //    val weather = MutableStateFlow(WeatherModel())
@@ -25,7 +25,7 @@ object SharedViewModel : ViewModel() {
     private fun fetchLatestNews() {
         viewModelScope.launch {
             try {
-                news.value = nimbusRepository.getNews()
+                news.value = dataRepository.getNews()
 //                weather.value = nimbusRepository.getWeather()
             } catch (_: Exception) {
                 Log.d("SharedViewModel", "Failed to fetch news")

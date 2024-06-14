@@ -3,9 +3,6 @@ package com.android.nimbus.ui.components
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,7 +16,6 @@ import androidx.compose.material.icons.outlined.KeyOff
 import androidx.compose.material.icons.sharp.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -46,7 +41,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.android.nimbus.R
 import com.android.nimbus.Screen
 
 @Composable
@@ -59,7 +53,7 @@ fun ImageComponent(
         contentDescription = null,
         modifier = modifier
             .fillMaxWidth()
-            .size(300.dp),
+            .size(250.dp),
         contentScale = ContentScale.Crop
     )
 }
@@ -82,13 +76,11 @@ fun HeadingTextComponent(
 @Composable
 fun CustomTextField(
     labelVal: String,
+    value: String,
+    onValueChange: (String) -> Unit,
     icon: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var textVal by remember {
-        mutableStateOf("")
-    }
-
     val typeOfKeyboard: KeyboardType = when (labelVal) {
         "Email ID" -> KeyboardType.Email
         "Mobile" -> KeyboardType.Phone
@@ -96,10 +88,8 @@ fun CustomTextField(
     }
 
     OutlinedTextField(
-        value = textVal,
-        onValueChange = {
-            textVal = it
-        },
+        value = value,
+        onValueChange = onValueChange,
         textStyle = MaterialTheme.typography.bodyMedium,
         modifier = modifier
             .fillMaxWidth(),
@@ -123,20 +113,17 @@ fun CustomTextField(
 @Composable
 fun PasswordInputComponent(
     labelVal: String,
+    value: String,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var password by remember {
-        mutableStateOf("")
-    }
     var isShowPassword by remember {
         mutableStateOf(false)
     }
 
     OutlinedTextField(
-        value = password,
-        onValueChange = {
-            password = it
-        },
+        value = value,
+        onValueChange = onValueChange,
         textStyle = MaterialTheme.typography.bodyMedium,
         modifier = modifier
             .fillMaxWidth(),
@@ -198,9 +185,8 @@ fun ForgotPasswordTextComponent(
 
 @Composable
 fun CustomButton(
-    labelVal: String,
+    child: @Composable () -> Unit,
     action: () -> Unit,
-    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     Button(
@@ -211,93 +197,9 @@ fun CustomButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 30.dp)
+            .height(50.dp)
     ) {
-        Text(
-            text = labelVal,
-            color = MaterialTheme.colorScheme.primaryContainer,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.clickable {
-                if (labelVal == "Submit") {
-                    navController.navigate("ResetPassword")
-                }
-            }
-        )
-    }
-}
-
-@Composable
-fun BottomComponent(
-    actionButtonText: String,
-    googleButtonText: String,
-    actionButtonAction: () -> Unit,
-    googleButtonAction: () -> Unit,
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
-    Column {
-        CustomButton(
-            labelVal = actionButtonText,
-            action = actionButtonAction,
-            navController = navController,
-            modifier
-        )
-        Spacer(modifier = modifier.height(10.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.fillMaxWidth()
-        ) {
-            HorizontalDivider(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "OR",
-                modifier = modifier.padding(10.dp),
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 15.sp
-            )
-            HorizontalDivider(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        Spacer(modifier = modifier.height(5.dp))
-        Button(
-            onClick = googleButtonAction,
-            modifier = modifier
-                .fillMaxWidth(),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.google_icon),
-                    contentDescription = "Google Icon",
-                    modifier = modifier.size(25.dp),
-                )
-                Text(
-                    text = googleButtonText,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    textAlign = TextAlign.Center,
-                    modifier = modifier.fillMaxWidth()
-                )
-            }
-        }
+        child()
     }
 }
 
@@ -329,7 +231,6 @@ fun BottomLoginTextComponent(
         }
     }
 
-//    TODO: Align the text to the center
     ClickableText(
         text = annotatedString,
         style = MaterialTheme.typography.bodyMedium,

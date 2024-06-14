@@ -5,7 +5,7 @@ import com.android.nimbus.model.NewsModel
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class NimbusRepository {
+class DataRepository {
     private val nimbusAPI: NimbusAPI = Retrofit.Builder()
         .baseUrl("https://nimbus.armankhan.tech")
         .addConverterFactory(GsonConverterFactory.create())
