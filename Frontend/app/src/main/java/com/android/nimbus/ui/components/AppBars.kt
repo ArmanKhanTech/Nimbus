@@ -78,7 +78,7 @@ fun SettingsAppBar(
             Text(
                 title,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.primary
             )
         },
         navigationIcon = {

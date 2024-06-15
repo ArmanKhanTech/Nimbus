@@ -16,7 +16,7 @@ import java.util.Calendar
 import java.util.Locale
 
 object SharedViewModel : ViewModel() {
-    private val dataRepository: DataRepository = DataRepository()
+    private val dataRepository = DataRepository()
 
     private val _news = MutableStateFlow(NewsModel())
     val news: StateFlow<NewsModel> = _news
@@ -73,6 +73,12 @@ object SharedViewModel : ViewModel() {
             navController.navigate(
                 Screen.FEED.name + "/$category"
             )
+        }
+    }
+
+    fun appendBookmarks(article: List<Article>) {
+        for (i in article) {
+            _news.value.articles.add(i)
         }
     }
 }

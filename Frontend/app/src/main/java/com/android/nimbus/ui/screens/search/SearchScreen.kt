@@ -2,6 +2,7 @@ package com.android.nimbus.ui.screens.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -52,6 +54,8 @@ fun SearchScreen(
         mutableStateOf<List<Article>>(emptyList())
     }
 
+    var searchActive by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -62,20 +66,23 @@ fun SearchScreen(
                     searchText = newText
                     searchResults = viewModel.searchArticles(newText)
                 },
-                onSearch = { /* Nothing to do here */ },
-                active = true,
-                onActiveChange = { /* Nothing to do here */ },
+                onSearch = {
+                    searchResults = viewModel.searchArticles(searchText)
+                },
+                active = searchActive,
+                onActiveChange = {
+                    searchActive = it
+                },
                 placeholder = {
                     Text(
                         "Search",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 },
-                modifier = modifier
-                    .fillMaxSize(),
                 colors = SearchBarDefaults.colors(
                     containerColor = Color.Transparent,
-                    dividerColor = MaterialTheme.colorScheme.primary
+                    dividerColor = MaterialTheme.colorScheme.primary,
+//                   TODO: Fix underline color
                 ),
                 leadingIcon = {
                     IconButton(
@@ -114,11 +121,19 @@ fun SearchScreen(
             }
         }
     ) { innerPadding ->
-        Text(
-            text = "Search Results",
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = modifier
+                .fillMaxSize()
                 .padding(innerPadding)
-        )
+        ) {
+            Text(
+                text = "Nothing to show",
+                modifier = modifier,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }
 
@@ -141,7 +156,8 @@ fun SearchResult(
             text = article.title ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier.weight(1f)
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Left
         )
         VerticalDivider(
             modifier = modifier.width(10.dp)

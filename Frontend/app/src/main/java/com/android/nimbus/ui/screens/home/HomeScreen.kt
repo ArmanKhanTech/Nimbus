@@ -64,6 +64,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -91,7 +92,9 @@ fun HomeScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState = rememberDrawerState(
+        initialValue = DrawerValue.Closed
+    )
     val sheetState = rememberModalBottomSheetState()
 
     val viewModel = SharedViewModel
@@ -305,7 +308,8 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.openFeeds(navController, null, "all_news")
+                    viewModel
+                        .openFeeds(navController, null, "all_news")
                 },
                 imageDark = R.drawable.feed_icon_dark,
                 imageLight = R.drawable.feed_icon_light,
@@ -315,7 +319,8 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.openFeeds(navController, null, "top_stories")
+                    viewModel
+                        .openFeeds(navController, null, "top_stories")
                 },
                 imageDark = R.drawable.news_icon_dark,
                 imageLight = R.drawable.news_icon_light,
@@ -324,7 +329,8 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.openFeeds(navController, null, "trending")
+                    viewModel
+                        .openFeeds(navController, null, "trending")
                 },
                 imageDark = R.drawable.trending_icon_dark,
                 imageLight = R.drawable.trending_icon_light,
@@ -333,7 +339,7 @@ fun FeatureRow(
             FeatureButton(
                 isDarkMode = isDarkMode,
                 onButtonClick = {
-                    viewModel.openFeeds(navController, null, "bookmarks")
+                    navController.navigate(Screen.BOOKMARKS.name)
                 },
                 imageDark = R.drawable.bookmark_icon_dark,
                 imageLight = R.drawable.bookmark_icon_light,
@@ -442,7 +448,8 @@ fun TopStories(
     viewModel: SharedViewModel,
     modifier: Modifier = Modifier
 ) {
-    val topStories = viewModel.getArticlesByCategory("top_stories")
+    val topStories = viewModel
+        .getArticlesByCategory("top_stories")
 
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
@@ -475,10 +482,10 @@ fun TopStoriesMainHeadline(
     modifier: Modifier
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .bounceClick {
-                viewModel.openFeeds(navController, article.id, "top_stories")
+                viewModel
+                    .openFeeds(navController, article.id, "top_stories")
             }
     ) {
         AsyncImage(
@@ -495,7 +502,8 @@ fun TopStoriesMainHeadline(
         Text(
             text = article.title ?: "",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Left
         )
     }
 }
@@ -512,14 +520,16 @@ fun TopStoriesSubHeadlines(
         horizontalArrangement = Arrangement.Start,
         modifier = modifier
             .bounceClick {
-                viewModel.openFeeds(navController, article.id, "top_stories")
+                viewModel
+                    .openFeeds(navController, article.id, "top_stories")
             }
     ) {
         Text(
             text = article.title ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier.weight(1f)
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Left
         )
         VerticalDivider(
             modifier = modifier.width(10.dp)
@@ -587,8 +597,10 @@ fun Topics(
                         AutoScrollingText(
                             text = title,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onBackground
+                            color = if (selectedTabIndex == index)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onBackground
                         )
                     },
                     icon = {
@@ -645,7 +657,8 @@ fun TopicsPage(
     topic: String,
     modifier: Modifier = Modifier
 ) {
-    val topics = viewModel.getArticlesByCategory(topic.lowercase())
+    val topics = viewModel
+        .getArticlesByCategory(topic.lowercase())
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -690,7 +703,8 @@ fun TopicsSubHeadlines(
         horizontalArrangement = Arrangement.Start,
         modifier = modifier
             .bounceClick {
-                viewModel.openFeeds(navController, article.id, topic.lowercase())
+                viewModel
+                    .openFeeds(navController, article.id, topic.lowercase())
             }
     ) {
         AsyncImage(
@@ -709,7 +723,8 @@ fun TopicsSubHeadlines(
             text = article.title ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier.weight(1f)
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Left
         )
     }
 }
@@ -720,7 +735,8 @@ fun Trending(
     viewModel: SharedViewModel,
     modifier: Modifier = Modifier
 ) {
-    val trending = SharedViewModel.getArticlesByCategory("trending")
+    val trending = SharedViewModel
+        .getArticlesByCategory("trending")
 
     Column(
         modifier = modifier.padding(18.dp, 0.dp, 18.dp, 18.dp),
@@ -753,10 +769,11 @@ fun TrendingMainHeadline(
     modifier: Modifier = Modifier
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
         modifier = modifier
             .bounceClick {
-                viewModel.openFeeds(navController, article.id, "trending")
+                viewModel
+                    .openFeeds(navController, article.id, "trending")
             }
     ) {
         AsyncImage(
@@ -773,7 +790,8 @@ fun TrendingMainHeadline(
         Text(
             text = article.title ?:"",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Left
         )
     }
 }
@@ -790,14 +808,16 @@ fun TrendingSubHeadlines(
         horizontalArrangement = Arrangement.Start,
         modifier = modifier
             .bounceClick {
-                viewModel.openFeeds(navController, article.id, "trending")
+                viewModel
+                    .openFeeds(navController, article.id, "trending")
             }
     ) {
         Text(
             text = article.title ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier.weight(1f)
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Left
         )
         VerticalDivider(
             modifier = modifier.width(10.dp)

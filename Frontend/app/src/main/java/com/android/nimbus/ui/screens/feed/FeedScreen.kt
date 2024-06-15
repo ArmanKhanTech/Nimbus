@@ -7,6 +7,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +25,7 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
@@ -33,19 +36,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
@@ -53,9 +56,13 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.android.nimbus.R
 import com.android.nimbus.model.Article
+import com.android.nimbus.ui.components.CustomToast
 import com.android.nimbus.ui.components.FeedsAppBar
+import com.android.nimbus.ui.components.MessageType
 import com.android.nimbus.ui.components.Shimmer
+import com.android.nimbus.ui.screens.bookmarks.BookmarksViewModel
 import com.android.nimbus.ui.viewmodel.SharedViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -86,10 +93,9 @@ fun FeedScreen(
         }
     }
 
-    var pageCount by rememberSaveable { mutableIntStateOf(3) }
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { pageCount }
+        pageCount = { feed.size }
     )
 
     Scaffold(
@@ -100,6 +106,7 @@ fun FeedScreen(
                     "all_news" -> "All News"
                     "top_stories" -> "Top Stories"
                     "trending" -> "Trending"
+                    "bookmarks" -> "Bookmarks"
                     else -> category.replaceFirstChar {
                         if (it.isLowerCase())
                             it.titlecase(Locale.getDefault())
@@ -117,8 +124,7 @@ fun FeedScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            state = pagerState,
-            beyondBoundsPageCount = 3
+            state = pagerState
         ) {
             DisplayNews(
                 article = feed[it],
@@ -128,16 +134,10 @@ fun FeedScreen(
                 modifier = modifier
             )
         }
-
-        LaunchedEffect(pagerState.currentPage) {
-            val currentPage = pagerState.currentPage
-            if (currentPage % 3 == 0) {
-                pageCount += 3
-            }
-        }
     }
 }
 
+@SuppressLint("UnrememberedMutableInteractionSource")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DisplayNews(
@@ -147,13 +147,20 @@ fun DisplayNews(
     isDarkMode: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
-    val configuration = LocalConfiguration.current
     val scope = rememberCoroutineScope()
+
+    val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+
+    val scrollState = rememberScrollState()
+
+    var saved by remember { mutableStateOf(false) }
+    var showToast by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
             .height(screenHeight)
+            .padding(16.dp)
     ) {
         AsyncImage(
             model = article.imageUrl,
@@ -161,17 +168,28 @@ fun DisplayNews(
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
                 .height(screenHeight / 3f)
                 .background(Shimmer(true, 1000f))
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+        if (showToast) {
+            CustomToast(
+                message = if (saved) "Article saved successfully"
+                else "Article could not be saved",
+                messageType = if (saved) MessageType.SUCCESS
+                else MessageType.ERROR,
+                modifier = modifier
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = article.title ?: "",
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold,
             ),
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier.padding(horizontal = 16.dp)
+            textAlign = TextAlign.Left
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
@@ -180,17 +198,29 @@ fun DisplayNews(
             color = MaterialTheme.colorScheme.onBackground,
             overflow = TextOverflow.Ellipsis,
             modifier = modifier
-                .padding(horizontal = 16.dp)
-                .verticalScroll(state = rememberScrollState())
+                .weight(6f)
+                .verticalScroll(state = scrollState)
+                .clickable(
+                    indication = null,
+                    interactionSource = MutableInteractionSource(),
+                ) {
+                    scope.launch {
+                        if (scrollState.value == scrollState.maxValue) {
+                            scrollState.animateScrollTo(0)
+                        } else {
+                            scrollState.animateScrollTo(scrollState.maxValue)
+                        }
+                    }
+                },
+            textAlign = TextAlign.Left
         )
         Spacer(modifier = modifier.height(10.dp))
         Text(
             text = ("Author: " + article.author),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier
-                .padding(16.dp),
-            maxLines = 1
+            maxLines = 1,
+            textAlign = TextAlign.Left
         )
         Spacer(modifier = modifier.weight(1f))
         Row(
@@ -207,7 +237,16 @@ fun DisplayNews(
                 darkIcon = R.drawable.bookmark_icon_dark,
                 lightIcon = R.drawable.bookmark_icon_light,
                 onButtonClick = {
-                    // Add bookmark functionality here
+                    val viewModel = BookmarksViewModel()
+                    scope.launch {
+                        if (!saved) {
+                            saved = viewModel.addBookmark(article)
+                            showToast = true
+
+                            delay(2000)
+                            showToast = false
+                        }
+                    }
                 },
                 isDarkMode = isDarkMode
             )

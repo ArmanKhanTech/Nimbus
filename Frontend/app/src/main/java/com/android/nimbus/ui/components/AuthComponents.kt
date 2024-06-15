@@ -1,8 +1,10 @@
 package com.android.nimbus.ui.components
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -164,6 +166,7 @@ fun PasswordInputComponent(
     )
 }
 
+@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 fun ForgotPasswordTextComponent(
     navController: NavController,
@@ -175,7 +178,10 @@ fun ForgotPasswordTextComponent(
         style = MaterialTheme.typography.bodyMedium,
         modifier = modifier
             .fillMaxWidth()
-            .clickable {
+            .clickable(
+                indication = null,
+                interactionSource = MutableInteractionSource(),
+            ) {
                 navController.navigate(Screen.FORGOT_PASSWORD.name)
             },
         textAlign = TextAlign.End,

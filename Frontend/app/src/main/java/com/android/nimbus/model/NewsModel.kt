@@ -16,6 +16,5 @@ data class Article(
     @SerializedName("image_url") var imageUrl: String? = null,
     @SerializedName("source_url") var sourceUrl: String? = null,
     @SerializedName("time") var time: String? = null,
-    @SerializedName("title") var title: String? = null,
-    @SerializedName("url") var url: String? = null
+    @SerializedName("title") var title: String? = null
 )
