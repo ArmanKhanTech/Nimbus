@@ -53,7 +53,7 @@ fun ImageComponent(
         contentDescription = null,
         modifier = modifier
             .fillMaxWidth()
-            .size(250.dp),
+            .size(300.dp),
         contentScale = ContentScale.Crop
     )
 }

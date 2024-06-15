@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.android.nimbus.Screen
 import com.android.nimbus.repository.AuthRepository
+import com.android.nimbus.utility.SharedPreferenceUtility
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("StaticFieldLeak")
 class AuthViewModel(
-    private val navController: NavController
+    private val navController: NavController,
+    private val sharedPreferences: SharedPreferenceUtility
 ) : ViewModel() {
     private val authRepository = AuthRepository(
         FirebaseAuth.getInstance(),
@@ -33,6 +35,7 @@ class AuthViewModel(
     ) {
         if (email.isEmpty() || password.isEmpty() || name.isEmpty() || phone.isEmpty()) {
             handleErrorMsg("All fields are required")
+            return
         }
 
         if (!email.contains("@")) {
@@ -59,6 +62,8 @@ class AuthViewModel(
             if (result.result != null) {
                 loading.value = false
 
+                sharedPreferences.saveBooleanData("loggedIn", true)
+
                 navController.navigate(Screen.HOME.name) {
                     launchSingleTop = true
                     popUpTo(Screen.HOME.name) {
@@ -73,6 +78,11 @@ class AuthViewModel(
     }
 
     fun loginWithEmail(email: String, password: String) {
+        if (email.isEmpty() || password.isEmpty()) {
+            handleErrorMsg("All fields are required")
+            return
+        }
+
         if (!email.contains("@")) {
             handleErrorMsg("Invalid email")
             return
@@ -91,6 +101,8 @@ class AuthViewModel(
             if (result.result != null) {
                 loading.value = false
 
+                sharedPreferences.saveBooleanData("loggedIn", true)
+
                 navController.navigate(Screen.HOME.name) {
                     launchSingleTop = true
                     popUpTo(Screen.HOME.name) {
@@ -105,6 +117,11 @@ class AuthViewModel(
     }
 
     fun sendResetPasswordEmail(email: String) {
+        if (email.isEmpty()) {
+            handleErrorMsg("Email is required")
+            return
+        }
+
         if (!email.contains("@")) {
             handleErrorMsg("Invalid email")
             return

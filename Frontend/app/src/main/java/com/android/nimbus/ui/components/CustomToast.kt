@@ -9,7 +9,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,19 +25,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+enum class MessageType {
+    SUCCESS,
+    ERROR
+}
+
 @Composable
-fun TopToast(
+fun CustomToast(
     modifier: Modifier = Modifier,
     messageType: MessageType = MessageType.SUCCESS,
     message: String = "An unexpected error occurred. Please try again later",
-    height: Dp = 100.dp,
-    width: Dp? = null,
-    onDismissCallback: @Composable () -> Unit = {},
 ) {
     var hasTransitionStarted by remember { mutableStateOf(false) }
     var slideDownAnimation by remember { mutableStateOf(true) }
@@ -45,7 +48,7 @@ fun TopToast(
     var dismissCallback by remember { mutableStateOf(false) }
 
     val displayMetrics: DisplayMetrics = LocalContext.current.resources.displayMetrics
-    val screenWidthInDp = width ?: (displayMetrics.widthPixels / displayMetrics.density).dp
+    val screenWidthInDp = (displayMetrics.widthPixels / displayMetrics.density).dp
 
     val boxWidth by animateDpAsState(
         targetValue = if (hasTransitionStarted) screenWidthInDp else 0.dp,
@@ -53,16 +56,9 @@ fun TopToast(
         label = "Box Width",
     )
 
-    val boxHeight by animateDpAsState(
-        targetValue = if (hasTransitionStarted) height else 0.dp,
-        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
-        label = "Box Height",
-    )
-
     if (!animationStarted) {
         LaunchedEffect(Unit) {
             slideDownAnimation = false
-
             hasTransitionStarted = true
             showMessage = true
 
@@ -83,7 +79,7 @@ fun TopToast(
     ) {
         Box(
             modifier = modifier
-                .size(boxWidth, boxHeight)
+                .width(boxWidth)
                 .clip(RoundedCornerShape(16.dp))
                 .background(getColorForMessageType(messageType))
                 .align(alignment = Alignment.TopCenter),
@@ -92,22 +88,20 @@ fun TopToast(
             if (showMessage) {
                 Text(
                     text = message,
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (messageType == MessageType.SUCCESS)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else Color.White,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier
+                    modifier = modifier
+                        .wrapContentHeight()
                         .padding(16.dp),
                 )
             }
-
-            if (dismissCallback) onDismissCallback()
         }
     }
-}
-
-enum class MessageType {
-    SUCCESS,
-    ERROR
 }
 
 @SuppressLint("NewApi")

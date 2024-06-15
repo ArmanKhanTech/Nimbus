@@ -11,13 +11,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.android.nimbus.Screen
 import com.android.nimbus.ui.viewmodel.SharedViewModel
+import com.android.nimbus.utility.NetworkUtility
+import com.android.nimbus.utility.SharedPreferenceUtility
 import kotlinx.coroutines.delay
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -26,16 +33,34 @@ fun SplashScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val sharedPreferences = SharedPreferenceUtility(context)
+
+    var noInternet by remember { mutableStateOf(false) }
+
     val news = SharedViewModel.news.collectAsState().value
     LaunchedEffect(news) {
         delay(2000)
-        if (news.articles.isNotEmpty()) {
-            navController.navigate(Screen.HOME.name) {
-                launchSingleTop = true
-                popUpTo(Screen.HOME.name) {
-                    inclusive = true
+        if (NetworkUtility(context).isNetworkAvailable()) {
+            if (sharedPreferences.getBooleanData("loggedIn", false)) {
+                if (news.articles.isNotEmpty()) {
+                    navController.navigate(Screen.HOME.name) {
+                        launchSingleTop = true
+                        popUpTo(Screen.SPLASH.name) {
+                            inclusive = true
+                        }
+                    }
+                }
+            } else {
+                navController.navigate(Screen.LOGIN.name) {
+                    launchSingleTop = true
+                    popUpTo(Screen.SPLASH.name) {
+                        inclusive = true
+                    }
                 }
             }
+        } else {
+            noInternet = true
         }
     }
 
@@ -45,6 +70,7 @@ fun SplashScreen(
             .fillMaxSize()
     ) {
         Column(
+            modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -56,6 +82,14 @@ fun SplashScreen(
                 text = "Splash Screen",
                 modifier = modifier.padding(10.dp, 10.dp),
             )
+            if (noInternet) {
+                Text(
+                    text = "No Internet Connection",
+                    modifier = modifier
+                        .padding(10.dp, 10.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
         }
     }
 }

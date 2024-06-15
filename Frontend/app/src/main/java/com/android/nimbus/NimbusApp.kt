@@ -15,6 +15,7 @@ import com.android.nimbus.ui.screen.home.HomeScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
 import com.android.nimbus.ui.screens.auth.screen.ForgotPasswordScreen
+import com.android.nimbus.ui.screens.search.SearchScreen
 import com.android.nimbus.utility.scaleInTransition
 import com.android.nimbus.utility.scaleOutTransition
 
@@ -25,7 +26,8 @@ enum class Screen {
     SETTINGS,
     LOGIN,
     SIGNUP,
-    FORGOT_PASSWORD
+    FORGOT_PASSWORD,
+    SEARCH
 }
 
 sealed class NavigationItem(val route: String) {
@@ -36,6 +38,7 @@ sealed class NavigationItem(val route: String) {
     data object Login : NavigationItem(Screen.LOGIN.name)
     data object Signup : NavigationItem(Screen.SIGNUP.name)
     data object ForgotPassword : NavigationItem(Screen.FORGOT_PASSWORD.name)
+    data object Search : NavigationItem(Screen.SEARCH.name)
 }
 
 @Composable
@@ -99,6 +102,9 @@ fun NimbusApp(
         }
         composable(NavigationItem.ForgotPassword.route) {
             ForgotPasswordScreen(navController, modifier)
+        }
+        composable(NavigationItem.Search.route) {
+            SearchScreen(navController, modifier)
         }
     }
 }

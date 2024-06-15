@@ -24,30 +24,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.android.nimbus.ui.components.CustomButton
 import com.android.nimbus.ui.components.CustomTextField
+import com.android.nimbus.ui.components.CustomToast
 import com.android.nimbus.ui.components.FeedsAppBar
 import com.android.nimbus.ui.components.HeadingTextComponent
 import com.android.nimbus.ui.components.MessageType
 import com.android.nimbus.ui.components.TextInfoComponent
-import com.android.nimbus.ui.components.TopToast
 import com.android.nimbus.ui.screen.auth.screen.AuthViewModel
+import com.android.nimbus.utility.SharedPreferenceUtility
 
 @Composable
 fun ForgotPasswordScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val viewModel = AuthViewModel(navController)
+    val context = LocalContext.current
+    val sharedPreferences = SharedPreferenceUtility(context)
+    val viewModel = AuthViewModel(navController, sharedPreferences)
 
-    var email by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
 
     val loading by viewModel.loading.collectAsState()
     val errorMsg by viewModel.errorMsg.collectAsState()
@@ -73,7 +77,8 @@ fun ForgotPasswordScreen(
                     state = rememberScrollState(),
                     orientation = Orientation.Vertical
                 )
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             contentPadding = PaddingValues(16.dp)
@@ -91,13 +96,13 @@ fun ForgotPasswordScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 if (errorMsg.isNotEmpty()) {
                     if (errorMsg == "Password reset email sent") {
-                        TopToast(
+                        CustomToast(
                             message = "Password reset email sent",
                             messageType = MessageType.SUCCESS,
                             modifier = modifier
                         )
                     } else {
-                        TopToast(
+                        CustomToast(
                             message = errorMsg,
                             messageType = MessageType.ERROR,
                             modifier = modifier
@@ -129,11 +134,12 @@ fun ForgotPasswordScreen(
                     child = {
                         if (loading) {
                             CircularProgressIndicator(
-                                color = MaterialTheme.colorScheme.onPrimary
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = modifier.size(25.dp)
                             )
                         } else {
                             Text(
-                                text = "Signup",
+                                text = "Send Email",
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold

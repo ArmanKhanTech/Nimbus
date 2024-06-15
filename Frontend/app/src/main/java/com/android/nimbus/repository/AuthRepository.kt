@@ -9,6 +9,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
+data class Result(
+    val result: AuthResult?,
+    val error: String
+)
+
 class AuthRepository(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore
@@ -24,7 +29,6 @@ class AuthRepository(
                 .createUserWithEmailAndPassword(email, password)
                 .await()
             saveUserDetails(user.user!!, name, phone)
-
             emit(Result(user, ""))
         }.catch { e ->
             emit(Result(null, e.message ?: "An error occurred"))
@@ -70,8 +74,3 @@ class AuthRepository(
         )
     }
 }
-
-data class Result(
-    val result: AuthResult?,
-    val error: String
-)
