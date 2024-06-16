@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -155,6 +156,8 @@ fun DisplayNews(
     val scrollState = rememberScrollState()
 
     var saved by remember { mutableStateOf(false) }
+    var saving by remember { mutableStateOf(false) }
+
     var showToast by remember { mutableStateOf(false) }
 
     Column(
@@ -230,26 +233,35 @@ fun DisplayNews(
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 10.dp)
         ) {
-            ActionButton(
-                title = "Bookmark",
-                padding = PaddingValues(2.dp),
-                size = 30,
-                darkIcon = R.drawable.bookmark_icon_dark,
-                lightIcon = R.drawable.bookmark_icon_light,
-                onButtonClick = {
-                    val viewModel = BookmarksViewModel()
-                    scope.launch {
-                        if (!saved) {
-                            saved = viewModel.addBookmark(article)
-                            showToast = true
+            if (saving) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = modifier.size(30.dp)
+                )
+            } else {
+                ActionButton(
+                    title = "Bookmark",
+                    padding = PaddingValues(2.dp),
+                    size = 30,
+                    darkIcon = R.drawable.bookmark_icon_dark,
+                    lightIcon = R.drawable.bookmark_icon_light,
+                    onButtonClick = {
+                        val viewModel = BookmarksViewModel()
+                        scope.launch {
+                            if (!saved) {
+                                saving = true
+                                saved = viewModel.addBookmark(article)
+                                showToast = true
 
-                            delay(2000)
-                            showToast = false
+                                saving = false
+                                delay(2000)
+                                showToast = false
+                            }
                         }
-                    }
-                },
-                isDarkMode = isDarkMode
-            )
+                    },
+                    isDarkMode = isDarkMode
+                )
+            }
             Spacer(modifier = modifier.width(10.dp))
             ActionButton(
                 title = "Share",

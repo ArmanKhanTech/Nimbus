@@ -1,12 +1,13 @@
 package com.android.nimbus.repository
 
-import android.util.Log
+import androidx.annotation.Keep
 import com.android.nimbus.model.Article
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.tasks.await
 
+@Keep
 data class Bookmark(
     @SerializedName("email") val email: String = "",
     @SerializedName("article") val article: Article = Article()
@@ -26,11 +27,13 @@ class BookmarksRepository(
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    result.add(document.toObject(Bookmark::class.java).article)
+                    val article = document.toObject(Bookmark::class.java).article
+                    if (result.any { it.title == article.title }) {
+                        continue
+                    } else {
+                        result.add(article)
+                    }
                 }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("BookmarksRepository", "Error getting documents: ", exception)
             }
             .await()
 
@@ -46,20 +49,21 @@ class BookmarksRepository(
         val bookmarks = getBookmarks()
         if (bookmarks.contains(article)) {
             return false
+        } else {
+            article.category = "bookmarks"
+
+            val bookmark = Bookmark(email.toString(), article)
+            firestore.collection("bookmarks")
+                .add(bookmark)
+                .addOnSuccessListener {
+                    status = true
+                }
+                .addOnFailureListener { e ->
+                    status = false
+                }
+                .await()
+
+            return status
         }
-
-        article.category = "bookmarks"
-        val bookmark = Bookmark(email.toString(), article)
-        firestore.collection("bookmarks")
-            .add(bookmark)
-            .addOnSuccessListener {
-                status = true
-            }
-            .addOnFailureListener { e ->
-                status = false
-            }
-            .await()
-
-        return status
     }
 }

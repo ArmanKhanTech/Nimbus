@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                 remember {
                     mutableStateOf(
                     sharedPreferences.getBooleanData(
-                        "darkMode", 
+                        "darkMode",
                         false)
                     )
                 }

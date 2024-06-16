@@ -52,7 +52,7 @@ fun ImageComponent(
 ) {
     Image(
         painter = painterResource(id = image),
-        contentDescription = null,
+        contentDescription = "App Icon",
         modifier = modifier
             .fillMaxWidth()
             .size(300.dp),

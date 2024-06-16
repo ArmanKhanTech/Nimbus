@@ -47,7 +47,7 @@ def weather():
                 return jsonify(result), 200
             else:
                 return jsonify({
-                    "message": "Invalid API key or location."
+                    "message": "Invalid API key or Location."
                 }), 403
         else:
             return jsonify({

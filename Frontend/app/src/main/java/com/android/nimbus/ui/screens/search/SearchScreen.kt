@@ -42,6 +42,7 @@ import com.android.nimbus.ui.components.Shimmer
 import com.android.nimbus.ui.viewmodel.SharedViewModel
 import com.android.nimbus.utility.bounceClick
 
+// TODO: Fix the underline and clipping of text in the search bar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(

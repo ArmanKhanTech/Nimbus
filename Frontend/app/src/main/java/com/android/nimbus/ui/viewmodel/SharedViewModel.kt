@@ -1,7 +1,5 @@
 package com.android.nimbus.ui.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -26,7 +24,8 @@ object SharedViewModel : ViewModel() {
     private val _weather = MutableStateFlow(WeatherModel())
     val weather: StateFlow<WeatherModel> = _weather
 
-    private val _city = MutableLiveData<String?>()
+    private val _city = MutableStateFlow<String?>("")
+    val city: StateFlow<String?> = _city
 
     init {
         fetchLatestNews()
@@ -38,7 +37,6 @@ object SharedViewModel : ViewModel() {
                 _news.value = dataRepository.getNews()
                 _weather.value = dataRepository.getWeather(_city.toString())
             } catch (_: Exception) {
-                Log.d("SharedViewModel", "Failed to fetch data")
             }
         }
     }
