@@ -2,6 +2,7 @@ package com.android.nimbus.repository
 
 import com.android.nimbus.api.NimbusAPI
 import com.android.nimbus.model.NewsModel
+import com.android.nimbus.model.WeatherModel
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -16,7 +17,7 @@ class DataRepository {
         return nimbusAPI.getNews()
     }
 
-//    suspend fun getWeather(): WeatherModel {
-//        return nimbusAPI.getWeather()
-//    }
+    suspend fun getWeather(city: String): WeatherModel {
+        return nimbusAPI.getWeather(city = city)
+    }
 }

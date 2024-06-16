@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -73,6 +74,8 @@ fun SearchScreen(
                 onActiveChange = {
                     searchActive = it
                 },
+                modifier = modifier
+                    .fillMaxWidth(),
                 placeholder = {
                     Text(
                         "Search",
@@ -82,7 +85,6 @@ fun SearchScreen(
                 colors = SearchBarDefaults.colors(
                     containerColor = Color.Transparent,
                     dividerColor = MaterialTheme.colorScheme.primary,
-//                   TODO: Fix underline color
                 ),
                 leadingIcon = {
                     IconButton(

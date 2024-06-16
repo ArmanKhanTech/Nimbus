@@ -146,9 +146,15 @@ fun PasswordInputComponent(
             )
         },
         trailingIcon = {
-            val description = if (isShowPassword) "Show Password" else "Hide Password"
+            val description = if (isShowPassword)
+                "Show Password"
+            else
+                "Hide Password"
             val iconImage =
-                if (isShowPassword) Icons.Outlined.KeyOff else Icons.Outlined.Key
+                if (isShowPassword)
+                    Icons.Outlined.KeyOff
+                else
+                    Icons.Outlined.Key
 
             IconButton(onClick = {
                 isShowPassword = !isShowPassword
@@ -162,7 +168,10 @@ fun PasswordInputComponent(
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        visualTransformation = if (isShowPassword) VisualTransformation.None else PasswordVisualTransformation()
+        visualTransformation = if (isShowPassword)
+            VisualTransformation.None
+        else
+            PasswordVisualTransformation()
     )
 }
 
@@ -276,7 +285,10 @@ fun SignupTermsAndPrivacyText() {
                 fontSize = 20.sp
             )
         ) {
-            pushStringAnnotation(tag = termsNConditionText, annotation = termsNConditionText)
+            pushStringAnnotation(
+                tag = termsNConditionText,
+                annotation = termsNConditionText
+            )
             append(termsNConditionText)
         }
         withStyle(
@@ -295,7 +307,10 @@ fun SignupTermsAndPrivacyText() {
                 fontSize = 20.sp
             )
         ) {
-            pushStringAnnotation(tag = privacyPolicyText, annotation = privacyPolicyText)
+            pushStringAnnotation(
+                tag = privacyPolicyText,
+                annotation = privacyPolicyText
+            )
             append(privacyPolicyText)
         }
     }

@@ -1,12 +1,14 @@
 package com.android.nimbus.model
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class NewsModel(
     @SerializedName("articles") var articles: ArrayList<Article> = arrayListOf(),
-    @SerializedName("success") var success: Boolean? = null
 )
 
+@Keep
 data class Article(
     @SerializedName("author") var author: String? = null,
     @SerializedName("category") var category: String? = null,

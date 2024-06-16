@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.android.nimbus.ui.theme.NimbusTheme
+import com.android.nimbus.ui.viewmodel.SharedViewModel
+import com.android.nimbus.utility.LocationUtility
 import com.android.nimbus.utility.SharedPreferenceUtility
 import com.google.firebase.FirebaseApp
 
@@ -17,7 +19,20 @@ class MainActivity : ComponentActivity() {
 
             val sharedPreferences = SharedPreferenceUtility(this)
             val isDarkMode =
-                remember { mutableStateOf(sharedPreferences.getBooleanData("darkMode", false)) }
+                remember {
+                    mutableStateOf(
+                    sharedPreferences.getBooleanData(
+                        "darkMode", 
+                        false)
+                    )
+                }
+
+            val sharedViewModel = SharedViewModel
+
+            val locationUtility = LocationUtility(this)
+            val city = locationUtility.getCity()
+
+            sharedViewModel.setCity(city)
 
             NimbusTheme(
                 useDarkTheme = isDarkMode.value
