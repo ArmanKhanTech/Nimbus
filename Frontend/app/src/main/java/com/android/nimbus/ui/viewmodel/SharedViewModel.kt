@@ -28,13 +28,21 @@ object SharedViewModel : ViewModel() {
     val city: StateFlow<String?> = _city
 
     init {
-        fetchLatestNews()
+        fetchData()
     }
 
-    private fun fetchLatestNews() {
+    private fun fetchData() {
         viewModelScope.launch {
             try {
-                _news.value = dataRepository.getNews()
+                val newsModel = dataRepository.getNews()
+                newsModel.articles = newsModel
+                    .articles
+                    .shuffled()
+                    .distinctBy {
+                        it.title
+                    } as ArrayList<Article>
+                _news.value = newsModel
+
                 _weather.value = dataRepository.getWeather(_city.toString())
             } catch (_: Exception) {
             }
@@ -42,7 +50,9 @@ object SharedViewModel : ViewModel() {
     }
 
     fun setCity(city: String?) {
-        _city.value = city
+        if (city != "Unknown" && city != "Permission not granted") {
+            _city.value = city
+        }
     }
 
     fun searchArticles(query: String): List<Article> {
@@ -53,8 +63,13 @@ object SharedViewModel : ViewModel() {
     }
 
     fun getArticlesByCategory(category: String): ArrayList<Article> {
-        val filteredArticle = news.value.articles.filter { it.category == category }
-        return filteredArticle as ArrayList
+        return if (category != "recent") {
+            val filteredArticle = news.value.articles.filter { it.category == category }
+            ArrayList(filteredArticle)
+        } else {
+            val sortedArticles = news.value.articles.sortedBy { it.time }
+            ArrayList(sortedArticles)
+        }
     }
 
     fun getArticleByID(id: String): Article {

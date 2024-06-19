@@ -8,15 +8,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.android.nimbus.ui.screen.auth.screen.ForgotPasswordScreen
 import com.android.nimbus.ui.screen.auth.screen.LoginScreen
 import com.android.nimbus.ui.screen.auth.screen.SignupScreen
+import com.android.nimbus.ui.screen.bookmarks.BookmarksScreen
 import com.android.nimbus.ui.screen.feed.FeedScreen
 import com.android.nimbus.ui.screen.home.HomeScreen
+import com.android.nimbus.ui.screen.search.SearchScreen
 import com.android.nimbus.ui.screen.settings.SettingsScreen
 import com.android.nimbus.ui.screen.splash.SplashScreen
-import com.android.nimbus.ui.screens.auth.screen.ForgotPasswordScreen
-import com.android.nimbus.ui.screens.bookmarks.BookmarksScreen
-import com.android.nimbus.ui.screens.search.SearchScreen
 import com.android.nimbus.utility.scaleInTransition
 import com.android.nimbus.utility.scaleOutTransition
 
@@ -72,7 +72,7 @@ fun NimbusApp(
             SplashScreen(navController, isDarkMode, modifier)
         }
         composable(NavigationItem.Home.route) {
-            HomeScreen(navController, isDarkMode, modifier)
+            HomeScreen(navController, modifier)
         }
         composable(
             "${NavigationItem.Feed.route}/{articleID}&{category}",
@@ -83,7 +83,7 @@ fun NimbusApp(
         ) {
             val articleID = it.arguments?.getString("articleID")
             val category = it.arguments?.getString("category")
-            FeedScreen(navController, articleID, category!!, isDarkMode, modifier)
+            FeedScreen(navController, articleID, category!!, modifier)
         }
         composable(
             "${NavigationItem.Feed.route}/{category}",
@@ -92,7 +92,7 @@ fun NimbusApp(
             )
         ) {
             val category = it.arguments?.getString("category")
-            FeedScreen(navController, null, category!!, isDarkMode, modifier)
+            FeedScreen(navController, null, category!!, modifier)
         }
         composable(NavigationItem.Settings.route) {
             SettingsScreen(navController, isDarkMode, modifier)
