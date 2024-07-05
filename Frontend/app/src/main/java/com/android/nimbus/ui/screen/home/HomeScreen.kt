@@ -917,14 +917,17 @@ fun BottomSheet(
             }
         } else {
             Column(
-                modifier = modifier.padding(18.dp),
+                modifier = modifier
+                    .navigationBarsPadding()
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(5.dp),
             ) {
                 Text(
                     text = "Enter your city name to get weather updates:",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = modifier.padding(horizontal = 18.dp)
                 )
                 OutlinedTextField(
                     value = cityText,
@@ -942,7 +945,9 @@ fun BottomSheet(
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     },
-                    modifier = modifier.fillMaxWidth()
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 18.dp)
                 )
                 Button(
                     onClick = {
@@ -961,7 +966,7 @@ fun BottomSheet(
                     ),
                     modifier = modifier
                         .fillMaxWidth()
-                        .padding(top = 30.dp)
+                        .padding(18.dp)
                         .height(50.dp)
                 ) {
                     Text(
