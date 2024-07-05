@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 
 @Keep
 data class WeatherModel(
-    @SerializedName("day") var day: ArrayList<Day> = arrayListOf()
+    @SerializedName("daily") var daily: ArrayList<Daily> = arrayListOf()
 )
 
 @Keep
-data class Day(
+data class Daily(
     @SerializedName("date") var date: String? = null,
     @SerializedName("hourly") var hourly: ArrayList<Hourly> = arrayListOf(),
     @SerializedName("temperature") var temperature: Int? = null

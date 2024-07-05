@@ -40,7 +40,7 @@ import com.android.nimbus.utility.NetworkUtility
 import com.android.nimbus.utility.SharedPreferenceUtility
 import kotlinx.coroutines.delay
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@SuppressLint("StateFlowValueCalledInComposition", "MissingPermission")
 @Composable
 fun SplashScreen(
     navController: NavController,
@@ -50,10 +50,12 @@ fun SplashScreen(
     val context = LocalContext.current
     val sharedPreferences = SharedPreferenceUtility(context)
 
+    val news = SharedViewModel.news.collectAsState().value
+    val city = SharedViewModel.city.collectAsState().value
+
     var noInternet by remember { mutableStateOf(false) }
 
-    val news = SharedViewModel.news.collectAsState().value
-    LaunchedEffect(news) {
+    LaunchedEffect(news, city) {
         delay(2000)
         if (NetworkUtility(context).isNetworkAvailable()) {
             if (sharedPreferences.getBooleanData("loggedIn", false)) {
@@ -114,7 +116,7 @@ fun SplashAnimation(
 ) {
     val preloaderLottieComposition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(
-            if (isDarkMode.value) R.raw.splash_light else R.raw.splash_dark
+            if (isDarkMode.value) R.raw.splash_dark else R.raw.splash_light
         )
     )
 

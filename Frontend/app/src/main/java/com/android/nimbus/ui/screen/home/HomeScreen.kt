@@ -1,7 +1,6 @@
 package com.android.nimbus.ui.screen.home
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,10 +15,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -31,10 +33,14 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timelapse
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +52,8 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SheetState
@@ -58,6 +66,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -71,14 +80,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.android.nimbus.R
 import com.android.nimbus.Screen
 import com.android.nimbus.data.topics
 import com.android.nimbus.data.topicsImages
 import com.android.nimbus.model.Article
-import com.android.nimbus.model.Day
+import com.android.nimbus.model.Daily
+import com.android.nimbus.model.Hourly
 import com.android.nimbus.ui.component.AutoScrollingText
 import com.android.nimbus.ui.component.HomeAppBar
 import com.android.nimbus.ui.component.LeftAlignSubHeadline
@@ -250,8 +263,7 @@ fun Header(
     scope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
+    val weather = SharedViewModel.weather.collectAsState()
     val city = SharedViewModel.city.collectAsState()
 
     Row(
@@ -279,11 +291,7 @@ fun Header(
         OutlinedButton(
             onClick = {
                 scope.launch {
-                    if (city.value != "Unknown" && city.value != "Permission not granted") {
-                        sheetState.show()
-                    } else {
-                        Toast.makeText(context, "Please enable location", Toast.LENGTH_SHORT).show()
-                    }
+                    sheetState.show()
                 }
             },
             colors = ButtonColors(
@@ -295,15 +303,32 @@ fun Header(
             border = BorderStroke(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.primary
-            )
+            ),
+            modifier = modifier
+                .padding(10.dp)
+                .height(50.dp)
         ) {
-            Text(
-                text = "38\u2103",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = MaterialTheme.colorScheme.primary
-            )
+            if(weather.value.daily.isNotEmpty()) {
+                Text(
+                    text = weather.value.daily[0].temperature.toString() + "°C",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            } else if(city.value.isNullOrEmpty()) {
+                Icon(
+                    imageVector = Icons.Filled.LocationOff,
+                    contentDescription = "City Icon",
+                    modifier = modifier.size(30.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = modifier.size(30.dp)
+                )
+            }
         }
     }
 }
@@ -533,7 +558,11 @@ fun TopStoriesMainHeadline(
             }
     ) {
         AsyncImage(
-            model = article.imageUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(article.imageUrl)
+                .crossfade(true)
+                .size(640)
+                .build(),
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -747,7 +776,11 @@ fun TrendingMainHeadline(
             }
     ) {
         AsyncImage(
-            model = article.imageUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(article.imageUrl)
+                .crossfade(true)
+                .size(640)
+                .build(),
             contentDescription = "Headline Image",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -784,8 +817,14 @@ fun BottomSheet(
     scope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
     val weather = SharedViewModel.weather.collectAsState()
     val city = SharedViewModel.city.collectAsState()
+
+    var cityText by remember {
+        mutableStateOf("")
+    }
 
     ModalBottomSheet(
         sheetState = sheetState,
@@ -796,33 +835,141 @@ fun BottomSheet(
         },
         containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
-        Column(
-            modifier = modifier.padding(20.dp)
-        ) {
-            Row {
-                Column {
-                    Text(
-                        text = weather.value.day[0].temperature.toString() + "℃",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = city.value ?: "City",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground
+        if(!city.value.isNullOrEmpty()) {
+            if(weather.value.daily.isNotEmpty()) {
+                LazyColumn(
+                    modifier = modifier
+                        .navigationBarsPadding()
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                ) {
+                    item {
+                        Row(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = 18.dp,
+                                    bottom = 10.dp,
+                                    end = 18.dp,
+                                    top = 0.dp
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.LocationOn,
+                                contentDescription = "City Icon",
+                                modifier = modifier.size(25.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = "${city.value}",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = modifier.padding(10.dp, 0.dp, 0.dp, 0.dp)
+                            )
+                        }
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(18.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            for (day in weather.value.daily) {
+                                WeatherDayCard(
+                                    weather = day,
+                                    modifier = modifier
+                                )
+                            }
+                        }
+                        LazyRow(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 18.dp),
+                            horizontalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            items(weather.value.daily[0].hourly) { hour ->
+                                WeatherHourCard(weather = hour, modifier)
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                Column(
+                    modifier = modifier
+                        .navigationBarsPadding()
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = modifier
+                            .size(50.dp)
                     )
                 }
-                Spacer(modifier = modifier.weight(1f))
-                // Image(painter = , contentDescription = )
             }
-            Spacer(modifier = modifier.weight(1f))
-            LazyRow(
-                modifier = modifier.padding(20.dp)
+        } else {
+            Column(
+                modifier = modifier.padding(18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(5.dp),
             ) {
-                items(3) {
-                    WeatherCard(
-                        weather = weather.value.day[it],
-                        modifier = modifier.padding(10.dp)
+                Text(
+                    text = "Enter your city name to get weather updates:",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                OutlinedTextField(
+                    value = cityText,
+                    onValueChange = {
+                        cityText = it
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    placeholder = {
+                        Text(
+                            text = "eg. New York",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    },
+                    modifier = modifier
+                        .fillMaxWidth()
+                )
+                Button(
+                    onClick = {
+                        SharedPreferenceUtility(context)
+                            .saveStringData("city", cityText)
+                        SharedViewModel.setCity(cityText)
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                    },
+                    colors = ButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp)
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "Submit",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -831,16 +978,127 @@ fun BottomSheet(
 }
 
 @Composable
-fun WeatherCard(
-    weather: Day,
+fun WeatherDayCard(
+    weather: Daily,
     modifier: Modifier = Modifier
 ) {
-    Column {
-        Text(text = "Day")
-//        Image(
-//            painter = ,
-//            contentDescription =
-//        )
-        Text(text = "38℃")
+    var kind by remember(weather) {
+        mutableStateOf("")
+    }
+
+    LaunchedEffect(Unit) {
+        val count = weather.hourly.groupBy { it.kind }.mapValues { it.value.size }
+        kind = count.maxByOrNull { it.value }?.key ?: "NONE"
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        Text(
+            text = weather.date.toString().substring(0, 3),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = weather.date.toString().substring(5, 11),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Image(
+            painter = painterResource(id = weatherIconByKind(kind)),
+            contentDescription = "Weather Icon",
+            modifier = modifier
+                .size(50.dp)
+        )
+        Text(
+            text = kind.replace("_", " ")
+                .lowercase()
+                .split(' ')
+                .joinToString(" ") {
+                    it.replaceFirstChar { char -> char.uppercase() }
+                },
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 12.sp
+            ),
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = "${weather.temperature}°C",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onBackground
+        )
     }
 }
+
+@Composable
+fun WeatherHourCard(
+    weather: Hourly,
+    modifier: Modifier = Modifier
+) {
+    var kind by remember(weather) {
+        mutableStateOf("")
+    }
+
+    LaunchedEffect(Unit) {
+        val count = weather.kind?.let { weather.kind?.let { it1 -> listOf(it1) } }?.groupBy { it }
+            ?.mapValues { it.value.size }
+        if (count != null) {
+            kind = count.maxByOrNull { it.value }?.key ?: "NONE"
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        Text(
+            text = weather.time.toString(),
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 12.sp
+            ),
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Image(
+            painter = painterResource(id = weatherIconByKind(kind)),
+            contentDescription = "Weather Icon",
+            modifier = modifier
+                .size(30.dp)
+        )
+        Text(
+            text = "${weather.temperature}°C",
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
+
+fun weatherIconByKind(kind: String): Int {
+    return when(kind) {
+        "CLOUDY" -> R.drawable.cloudy_icon
+        "FOG" -> R.drawable.fog_icon
+        "HEAVY_RAIN" -> R.drawable.rain_icon
+        "HEAVY_SHOWERS" -> R.drawable.rain_icon
+        "HEAVY_SNOW" -> R.drawable.snow_icon
+        "HEAVY_SNOW_SHOWERS" -> R.drawable.snow_icon
+        "LIGHT_RAIN" -> R.drawable.rain_icon
+        "LIGHT_SHOWERS" -> R.drawable.rain_icon
+        "LIGHT_SLEET" -> R.drawable.sleet_icon
+        "LIGHT_SLEET_SHOWERS" -> R.drawable.sleet_icon
+        "LIGHT_SNOW" -> R.drawable.snow_icon
+        "LIGHT_SNOW_SHOWERS" -> R.drawable.snow_icon
+        "PARTLY_CLOUDY" -> R.drawable.partly_cloudy_icon
+        "SUNNY" -> R.drawable.sunny_icon
+        "THUNDERY_HEAVY_RAIN" -> R.drawable.rain_thunder_icon
+        "THUNDERY_SHOWERS" -> R.drawable.rain_thunder_icon
+        "THUNDERY_SNOW_SHOWERS" -> R.drawable.snow_thunder_icon
+        "VERY_CLOUDY" -> R.drawable.cloudy_icon
+        else -> R.drawable.transparent
+    }
+}
+

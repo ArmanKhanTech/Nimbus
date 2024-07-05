@@ -42,16 +42,19 @@ object SharedViewModel : ViewModel() {
                         it.title
                     } as ArrayList<Article>
                 _news.value = newsModel
-
-                _weather.value = dataRepository.getWeather(_city.toString())
             } catch (_: Exception) {
             }
         }
     }
 
     fun setCity(city: String?) {
-        if (city != "Unknown" && city != "Permission not granted") {
-            _city.value = city
+        _city.value = city
+
+        viewModelScope.launch {
+            try {
+                _weather.value = dataRepository.getWeather(_city.value.toString().lowercase())
+            } catch (_: Exception) {
+            }
         }
     }
 
