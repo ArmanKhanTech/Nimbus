@@ -184,7 +184,7 @@ fun DisplayNews(
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = article.title ?: "",
+            text = article.title?.trim() ?: "",
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold,
             ),

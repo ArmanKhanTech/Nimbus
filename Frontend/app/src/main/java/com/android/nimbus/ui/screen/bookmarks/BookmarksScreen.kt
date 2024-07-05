@@ -90,7 +90,9 @@ fun BookmarksScreen(
                                 article = bookmarks[index],
                                 action = {
                                     SharedViewModel
-                                        .openFeeds(navController, bookmarks[index].id, "bookmarks")
+                                        .openFeeds(navController,
+                                            bookmarks[index].id, "bookmarks"
+                                        )
                                 },
                                 modifier = modifier
                             )

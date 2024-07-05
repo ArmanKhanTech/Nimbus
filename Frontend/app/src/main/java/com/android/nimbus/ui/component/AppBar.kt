@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeAppBar(
+    modifier: Modifier = Modifier,
     onMenuIconTap: () -> Unit = {},
     onSearchIconTap: () -> Unit = {},
 ) {
@@ -44,7 +45,7 @@ fun HomeAppBar(
                 Icon(
                     imageVector = Icons.Filled.Menu,
                     contentDescription = "Menu",
-                    modifier = Modifier.size(30.dp),
+                    modifier = modifier.size(30.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -54,7 +55,7 @@ fun HomeAppBar(
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Search",
-                    modifier = Modifier.size(30.dp),
+                    modifier = modifier.size(30.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }

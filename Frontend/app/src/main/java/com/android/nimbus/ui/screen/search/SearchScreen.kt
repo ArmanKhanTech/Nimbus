@@ -65,8 +65,7 @@ fun SearchScreen(
                 onActiveChange = {
                     searchActive = it
                 },
-                modifier = modifier
-                    .fillMaxWidth(),
+                modifier = modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
                         "Search",

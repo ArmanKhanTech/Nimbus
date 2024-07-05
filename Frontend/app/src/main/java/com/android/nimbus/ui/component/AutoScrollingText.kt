@@ -41,7 +41,6 @@ fun AutoScrollingText(
         text = text,
         style = style,
         color = color,
-        modifier = modifier
-            .horizontalScroll(scrollState)
+        modifier = modifier.horizontalScroll(scrollState)
     )
 }

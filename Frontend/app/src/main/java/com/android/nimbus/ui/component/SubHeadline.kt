@@ -37,7 +37,7 @@ fun RightAlignSubHeadline(
             }
     ) {
         Text(
-            text = article.title ?: "",
+            text = article.title?.trim() ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier.weight(1f),
@@ -93,7 +93,7 @@ fun LeftAlignSubHeadline(
             modifier = modifier.width(10.dp)
         )
         Text(
-            text = article.title ?: "",
+            text = article.title?.trim() ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = modifier.weight(1f),

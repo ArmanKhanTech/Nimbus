@@ -93,8 +93,7 @@ fun CustomTextField(
         value = value,
         onValueChange = onValueChange,
         textStyle = MaterialTheme.typography.bodyMedium,
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
         placeholder = {
             Text(
@@ -127,8 +126,7 @@ fun PasswordInputComponent(
         value = value,
         onValueChange = onValueChange,
         textStyle = MaterialTheme.typography.bodyMedium,
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
         placeholder = {
             Text(
@@ -329,7 +327,9 @@ fun SignupTermsAndPrivacyText() {
 }
 
 @Composable
-fun BottomSignupTextComponent(navController: NavController) {
+fun BottomSignupTextComponent(
+    navController: NavController
+) {
     val initialText = "Are you a familiar? "
     val loginText = "Login"
 

@@ -136,7 +136,8 @@ fun HomeScreen(
                     },
                     onSearchIconTap = {
                         navController.navigate(Screen.SEARCH.name)
-                    }
+                    },
+                    modifier = modifier
                 )
             }
         ) { innerPadding ->
@@ -267,8 +268,7 @@ fun Header(
     val city = SharedViewModel.city.collectAsState()
 
     Row(
-        modifier = modifier
-            .padding(18.dp),
+        modifier = modifier.padding(18.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -573,7 +573,7 @@ fun TopStoriesMainHeadline(
         )
         Spacer(modifier = modifier.height(10.dp))
         Text(
-            text = article.title ?: "",
+            text = article.title?.trim() ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Left
@@ -791,7 +791,7 @@ fun TrendingMainHeadline(
         )
         Spacer(modifier = modifier.height(10.dp))
         Text(
-            text = article.title ?:"",
+            text = article.title?.trim() ?: "",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Left
@@ -911,8 +911,7 @@ fun BottomSheet(
                 ) {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = modifier
-                            .size(50.dp)
+                        modifier = modifier.size(50.dp)
                     )
                 }
             }
@@ -943,8 +942,7 @@ fun BottomSheet(
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     },
-                    modifier = modifier
-                        .fillMaxWidth()
+                    modifier = modifier.fillMaxWidth()
                 )
                 Button(
                     onClick = {
@@ -1064,8 +1062,7 @@ fun WeatherHourCard(
         Image(
             painter = painterResource(id = weatherIconByKind(kind)),
             contentDescription = "Weather Icon",
-            modifier = modifier
-                .size(30.dp)
+            modifier = modifier.size(30.dp)
         )
         Text(
             text = "${weather.temperature}°C",

@@ -58,7 +58,7 @@ class BookmarksRepository(
                 .addOnSuccessListener {
                     status = true
                 }
-                .addOnFailureListener { e ->
+                .addOnFailureListener {
                     status = false
                 }
                 .await()
