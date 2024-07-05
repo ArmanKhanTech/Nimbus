@@ -15,7 +15,7 @@
 
   <h3 align="center">Nimbus</h3>
   <p align="center">Status: Completed</p>
-  <p align="center">A summerrized news & weather app.</p>
+  <p align="center">A summarized news & weather app.</p>
 
   <p align="center">
     <a href="https://github.com/ArmanKhanTech/Nimbus"><strong>Explore the docs »</strong></a>
