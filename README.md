@@ -57,8 +57,11 @@
 
 
 <b>Made with:</b>
-
-
+<li><img src="https://img.shields.io/badge/Kotlin-0095D5?&style=for-the-badge&logo=kotlin&logoColor=white" /></li>
+<li><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Jetpack+Compose&color=4285F4&logo=Jetpack+Compose&logoColor=FFFFFF&label=" /></li>
+<li><img src='https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white' /></li>
+<li><img src="https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white" /></li>
+<li><img src="https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase" /></li>
 <br />
 
 
@@ -68,17 +71,16 @@
 
 
 ## Screenshots
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/c118e706-0a04-4f21-b5fb-dda6acabf699" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/19e7e646-f4e6-4cb1-b632-314ec3c766fd" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/4f1cfe53-f6fe-4057-9ac3-288ad3c888e0" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/c9fc8e7a-7720-47d4-ae74-d5206f54376f" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/9da179f4-4354-40ff-9b0b-73d575efd0fa" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/b78a942a-14e3-4f20-a385-cd3c50c90d55" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/75a21c66-0134-48d8-9b9f-977e8aa6a95b" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/988dd9f2-b04f-49a9-8f8c-61dc70111aaf" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/90e8621b-7194-4ecf-84b3-77da10e28b2c" alt="Screenshot" width="250" height="500">
+<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/5f2cd5f5-b579-4723-a9db-b08ca808c591" alt="Screenshot" width="250" height="500">
 
 
 
