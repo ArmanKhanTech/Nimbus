@@ -33,7 +33,6 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#about-the-project">About the Project</a></li>
-    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#screenshots">Screenshots</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -45,12 +44,12 @@
 
 ## About the Project
 
-...
+Welcome to our News and Weather App, designed to keep you effortlessly informed and updated. Our app offers succinct summaries of the day's top stories, ensuring you stay informed without overwhelming you with lengthy articles. You can dive deeper into specific topics with categorized news sections such as Top Stories, Trending topics, and more, providing comprehensive coverage across various interests. Bookmark articles that catch your eye for later reading and personalize your news feed with our easy-to-use search function that allows you to find articles by keywords. Stay ahead of the weather with real-time updates, offering detailed forecasts on both daily and hourly bases. Whether you prefer to browse in Light or Dark Mode, our app ensures a customizable viewing experience to suit your preference. Sign up today to unlock these features and start enjoying a streamlined news and weather experience tailored just for you.
 
 **Supports Android 10 & above only.**
 
 
-<b>Features:</b>
+<h2>Features:</h2>
 <ul>
   <li><strong>Summarized News:</strong> Concise summaries of current events and headlines.</li>
   <li><strong>News Categories:</strong>
@@ -74,20 +73,14 @@
   <li><strong>Light & Dark Mode:</strong> Customize the interface with light or dark themes for optimal viewing.</li>
 </ul>
 
-<br />
 
-
-<b>Made with:</b>
+<h2>Made with:</h2>
 <li><img src="https://img.shields.io/badge/Kotlin-0095D5?&style=for-the-badge&logo=kotlin&logoColor=white" /></li>
 <li><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Jetpack+Compose&color=4285F4&logo=Jetpack+Compose&logoColor=FFFFFF&label=" /></li>
 <li><img src='https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white' /></li>
 <li><img src="https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white" /></li>
 <li><img src="https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase" /></li>
 <br />
-
-
-## Getting Started
-
 
 
 
