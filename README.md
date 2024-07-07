@@ -51,7 +51,28 @@
 
 
 <b>Features:</b>
-
+<ul>
+  <li><strong>Summarized News:</strong> Concise summaries of current events and headlines.</li>
+  <li><strong>News Categories:</strong>
+    <ul>
+      <li><strong>Top Stories:</strong> Highlighted news articles and breaking stories.</li>
+      <li><strong>All News:</strong> Comprehensive coverage across all categories.</li>
+      <li><strong>Trending:</strong> Popular topics gaining traction in real-time.</li>
+      <li><strong>Recent:</strong> Recently published articles and updates.</li>
+      <li><strong>Bookmark:</strong> Save articles to read later.</li>
+    </ul>
+  </li>
+  <li><strong>Articles by Topics:</strong> Explore articles categorized into various topics of interest.</li>
+  <li><strong>Search Articles by Keyword:</strong> Find specific articles using keywords or phrases.</li>
+  <li><strong>Bookmark Articles:</strong> Save favorite articles for easy access.</li>
+  <li><strong>Real-time Weather Updates:</strong>
+    <ul>
+      <li><strong>Daily & Hourly:</strong> Up-to-date weather forecasts, including daily and hourly updates.</li>
+    </ul>
+  </li>
+  <li><strong>Signup & Login:</strong> Register and log into your account to personalize your news experience.</li>
+  <li><strong>Light & Dark Mode:</strong> Customize the interface with light or dark themes for optimal viewing.</li>
+</ul>
 
 <br />
 
