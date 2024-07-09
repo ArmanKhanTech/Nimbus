@@ -33,6 +33,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#about-the-project">About the Project</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#screenshots">Screenshots</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -44,7 +45,7 @@
 
 ## About the Project
 
-Welcome to our News and Weather App, designed to keep you effortlessly informed and updated. Our app offers succinct summaries of the day's top stories, ensuring you stay informed without overwhelming you with lengthy articles. You can dive deeper into specific topics with categorized news sections such as Top Stories, Trending topics, and more, providing comprehensive coverage across various interests. Bookmark articles that catch your eye for later reading and personalize your news feed with our easy-to-use search function that allows you to find articles by keywords. Stay ahead of the weather with real-time updates, offering detailed forecasts on both daily and hourly bases. Whether you prefer to browse in Light or Dark Mode, our app ensures a customizable viewing experience to suit your preference. Sign up today to unlock these features and start enjoying a streamlined news and weather experience tailored just for you.
+Welcome to our Nimbus, designed to keep you effortlessly informed and updated. Our app offers succinct summaries of the day's top stories, ensuring you stay informed without overwhelming you with lengthy articles. You can dive deeper into specific topics with categorized news sections such as Top Stories, Trending topics, and more, providing comprehensive coverage across various interests. Bookmark articles that catch your eye for later reading and personalize your news feed with our easy-to-use search function that allows you to find articles by keywords. Stay ahead of the weather with real-time updates, offering detailed forecasts on both daily and hourly bases. Whether you prefer to browse in Light or Dark Mode, our app ensures a customizable viewing experience to suit your preference. Sign up today to unlock these features and start enjoying a streamlined news and weather experience tailored just for you.
 
 **Supports Android 10 & above only.**
 
@@ -83,6 +84,43 @@ Welcome to our News and Weather App, designed to keep you effortlessly informed 
 <br />
 
 
+## Getting Started
+
+Follow the below instructions to get started.
+
+
+### Prerequisites
+
+<ol>
+  <li>
+    <p>Android Studio</p>
+  </li>
+  <li>
+    <p>Kotlin 1.9+</p>
+  </li>
+  <li>
+    <p>Python 3.12</p>
+  </li>
+</ol>
+
+
+
+### Installation
+
+1. Clone this repository
+   
+   ```sh
+   git clone https://github.com/ArmanKhanTech/Nimbus.git
+   ```
+
+2. Install the backend dependancies
+    
+   ```sh
+   cd Backend
+   pip install -r requirements.txt
+   ```
+
+
 
 ## Screenshots
 <img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/c118e706-0a04-4f21-b5fb-dda6acabf699" alt="Screenshot" width="250" height="500">
@@ -95,6 +133,8 @@ Welcome to our News and Weather App, designed to keep you effortlessly informed 
 <img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/988dd9f2-b04f-49a9-8f8c-61dc70111aaf" alt="Screenshot" width="250" height="500">
 <img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/90e8621b-7194-4ecf-84b3-77da10e28b2c" alt="Screenshot" width="250" height="500">
 <img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/5f2cd5f5-b579-4723-a9db-b08ca808c591" alt="Screenshot" width="250" height="500">
+<img src="" alt="Screenshot" width="250" height="500">
+<img src="" alt="Screenshot" width="250" height="500">
 
 
 
