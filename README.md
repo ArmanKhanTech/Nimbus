@@ -153,9 +153,6 @@ Follow the below instructions to get started.
 <img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/75a21c66-0134-48d8-9b9f-977e8aa6a95b" alt="Screenshot" width="250" height="500">
 <img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/988dd9f2-b04f-49a9-8f8c-61dc70111aaf" alt="Screenshot" width="250" height="500">
 <img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/90e8621b-7194-4ecf-84b3-77da10e28b2c" alt="Screenshot" width="250" height="500">
-<img src="https://github.com/ArmanKhanTech/Nimbus/assets/92728787/5f2cd5f5-b579-4723-a9db-b08ca808c591" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
-<img src="" alt="Screenshot" width="250" height="500">
 
 
 
