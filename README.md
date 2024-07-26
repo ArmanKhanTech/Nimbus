@@ -107,19 +107,40 @@ Follow the below instructions to get started.
 
 ### Installation
 
-1. Clone this repository
+1. Clone this repository:
    
    ```sh
    git clone https://github.com/ArmanKhanTech/Nimbus.git
    ```
 
-2. Install the backend dependancies
+2. Install all the backend dependancies:
     
    ```sh
    cd Backend
    pip install -r requirements.txt
    ```
 
+3. Create `.env` file:
+
+   ```sh
+   touch .env
+   ```
+
+4. Add `API_KEY=[YOUR_API_KEY]` to `.env`.
+   
+5. Run the Flask development server:
+   
+   ```sh
+   py app.py
+   ```
+   
+6. Navigate to browser & verify functioning of both the endpoints:<br />
+   a. `/news?key=[YOUR_API_KEY]`<br />
+   b. `/weather?key=[YOUR_API_KEY]&city=[CITY_NAME]`<br />
+
+7. Also, add `API_KEY=[YOUR_API_KEY]` to `local.properties` in `Frontend/local.properties`.
+
+8. Run the app.
 
 
 ## Screenshots
