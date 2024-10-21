@@ -50,7 +50,8 @@ Welcome to Nimbus, designed to keep you effortlessly informed and updated. Our a
 **Supports Android 10 & above only.**
 
 
-<h2>Features</h2>
+### Features
+
 <ul>
   <li><strong>Summarized News:</strong> Concise summaries of current events and headlines.</li>
   <li><strong>News Categories:</strong>
@@ -75,7 +76,8 @@ Welcome to Nimbus, designed to keep you effortlessly informed and updated. Our a
 </ul>
 
 
-<h2>Built with</h2>
+### Built with
+
 <li><img src="https://img.shields.io/badge/Kotlin-0095D5?&style=for-the-badge&logo=kotlin&logoColor=white" /></li>
 <li><img src="https://img.shields.io/static/v1?style=for-the-badge&message=Jetpack+Compose&color=4285F4&logo=Jetpack+Compose&logoColor=FFFFFF&label=" /></li>
 <li><img src='https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white' /></li>
