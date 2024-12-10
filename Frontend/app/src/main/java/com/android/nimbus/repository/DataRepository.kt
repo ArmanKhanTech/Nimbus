@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class DataRepository {
     private val nimbusAPI: NimbusAPI = Retrofit.Builder()
-        .baseUrl("https://nimbus.armankhan.tech")
+        .baseUrl("https://nimbus-armankhantechs-projects.vercel.app")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(NimbusAPI::class.java)
