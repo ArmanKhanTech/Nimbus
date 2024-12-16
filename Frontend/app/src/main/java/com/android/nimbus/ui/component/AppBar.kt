@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -35,7 +36,8 @@ fun HomeAppBar(
             Text(
                 text = "Nimbus",
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 30.sp
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.primary
             )

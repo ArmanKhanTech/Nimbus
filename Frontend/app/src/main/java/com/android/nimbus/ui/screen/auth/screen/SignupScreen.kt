@@ -89,7 +89,7 @@ fun SignupScreen(
             contentPadding = PaddingValues(16.dp)
         ) {
             item {
-                HeadingTextComponent(heading = "Welcome Back")
+                HeadingTextComponent(heading = "Welcome to Nimbus")
                 Spacer(modifier = modifier.height(10.dp))
                 if (errorMsg.isNotEmpty()) {
                     CustomToast(
@@ -161,7 +161,7 @@ fun SignupScreen(
                             )
                         } else {
                             Text(
-                                text = "Signup",
+                                text = "Sign Up",
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold

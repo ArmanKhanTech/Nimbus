@@ -77,7 +77,7 @@ fun LoginScreen(
                     image = R.drawable.app_icon,
                     modifier
                 )
-                HeadingTextComponent(heading = "Welcome to Nimbus")
+                HeadingTextComponent(heading = "Welcome Back")
                 Spacer(modifier = modifier.height(10.dp))
                 if (errorMsg.isNotEmpty()) {
                     CustomToast(
@@ -126,7 +126,7 @@ fun LoginScreen(
                             )
                         } else {
                             Text(
-                                text = "Signup",
+                                text = "Sign In",
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold
@@ -142,7 +142,7 @@ fun LoginScreen(
                 Spacer(modifier = modifier.height(15.dp))
                 BottomLoginTextComponent(
                     initialText = "Haven't we seen you around here before? ",
-                    action = "Signup!",
+                    action = "Sign Up!",
                     navController
                 )
             }
